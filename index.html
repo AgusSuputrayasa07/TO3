@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulator Ujian — TKA Matematika SMA 2026</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,500&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.395.0/dist/umd/lucide.min.js" onerror="this.remove()"></script>
+
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          navy:   { 950:'#0B1220', 900:'#0F172A', 800:'#152036', 700:'#1E293B' },
+          slateink: { 700:'#334155', 600:'#475569', 500:'#64748B', 400:'#94A3B8', 300:'#CBD5E1', 200:'#E2E8F0', 100:'#EEF2F8', 50:'#F6F8FC' },
+          brand:  { 700:'#1D4ED8', 600:'#2563EB', 500:'#3B82F6', 100:'#DBEAFE', 50:'#EFF5FF' },
+          good:   { 700:'#15803D', 600:'#16A34A', 100:'#DCFCE7', 50:'#F0FDF4' },
+          bad:    { 700:'#B91C1C', 600:'#DC2626', 100:'#FEE2E2', 50:'#FEF2F2' },
+          warn:   { 700:'#B45309', 600:'#D97706', 100:'#FEF3C7', 50:'#FFFBEB' },
+        },
+        fontFamily: {
+          sans: ['"Plus Jakarta Sans"','ui-sans-serif','system-ui','sans-serif'],
+          mono: ['"JetBrains Mono"','ui-monospace','monospace'],
+        },
+        boxShadow: {
+          card: '0 1px 2px rgba(15,23,42,.04), 0 12px 32px -16px rgba(15,23,42,.14)',
+          pop:  '0 20px 60px -20px rgba(15,23,42,.35)',
+        },
+        borderRadius: { '2xl': '1.15rem', '3xl': '1.6rem' },
+      }
+    }
+  }
+</script>
+
+<style>
+  :root{
+    --ink: #0F172A;
+  }
+  html,body{ background:#F3F6FB; }
+  body{ font-family:"Plus Jakarta Sans",ui-sans-serif,system-ui,sans-serif; color:var(--ink); }
+  .num-tab{ font-variant-numeric: tabular-nums; }
+  ::selection{ background:#BFDBFE; }
+
+  /* subtle grid texture for hero backgrounds */
+  .grid-texture{
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(255,255,255,.14) 1px, transparent 0);
+    background-size: 22px 22px;
+  }
+
+  /* katex sizing */
+  .katex{ font-size: 1.04em; }
+  .math-block .katex-display{ margin: .85rem 0; overflow-x:auto; overflow-y:hidden; padding-bottom:2px; }
+  .prose-q p{ margin: 0 0 .65rem 0; line-height:1.65; }
+  .prose-q p:last-child{ margin-bottom:0; }
+  .prose-q ul{ margin: .4rem 0 .8rem 0; }
+  .prose-q li{ margin:.2rem 0; line-height:1.55; }
+
+  .q-table{ border-collapse:collapse; width:100%; margin:.75rem 0 1rem; font-size:.92em; }
+  .q-table th, .q-table td{ border:1px solid #DCE3EE; padding:.45rem .65rem; text-align:center; }
+  .q-table thead th{ background:#EFF5FF; color:#1D4ED8; font-weight:700; }
+  .q-table td:first-child, .q-table th:first-child{ text-align:left; }
+
+  .q-box{ border:1.5px dashed #CBD5E1; border-radius:1rem; padding:.9rem 1.1rem; background:#F8FAFC; margin:.75rem 0; }
+
+  .opt-shell{
+    position:relative; display:flex; gap:.8rem; align-items:flex-start;
+    border:1.5px solid #E2E8F0; background:#fff; border-radius:1rem;
+    padding:.85rem 1rem; cursor:pointer; transition:border-color .15s, background .15s, box-shadow .15s;
+  }
+  .opt-shell:hover{ border-color:#93C5FD; background:#F8FBFF; }
+  .opt-shell.is-selected{ border-color:#2563EB; background:#EFF5FF; box-shadow:0 0 0 3px rgba(37,99,235,.10); }
+  .opt-shell.is-correct{ border-color:#16A34A; background:#F0FDF4; }
+  .opt-shell.is-incorrect{ border-color:#DC2626; background:#FEF2F2; }
+  .opt-radio{
+    flex:none; width:1.3rem; height:1.3rem; border-radius:9999px; border:2px solid #CBD5E1;
+    display:flex; align-items:center; justify-content:center; margin-top:.1rem; background:#fff;
+    transition:border-color .15s, background .15s;
+  }
+  .opt-shell.is-selected .opt-radio{ border-color:#2563EB; }
+  .opt-radio-dot{ width:.62rem; height:.62rem; border-radius:9999px; background:#2563EB; opacity:0; transform:scale(.4); transition:opacity .12s, transform .12s; }
+  .opt-shell.is-selected .opt-radio-dot{ opacity:1; transform:scale(1); }
+
+  .opt-check{
+    flex:none; width:1.3rem; height:1.3rem; border-radius:.4rem; border:2px solid #CBD5E1;
+    display:flex; align-items:center; justify-content:center; margin-top:.1rem; background:#fff;
+    transition:border-color .15s, background .15s;
+  }
+  .opt-shell.is-selected .opt-check{ border-color:#2563EB; background:#2563EB; }
+
+  .navpill{
+    width:2.55rem; height:2.55rem; border-radius:.75rem; display:flex; align-items:center; justify-content:center;
+    font-weight:700; font-size:.85rem; border:1.6px solid #E2E8F0; background:#fff; color:#475569;
+    transition:all .12s; cursor:pointer;
+  }
+  .navpill:hover{ border-color:#93C5FD; }
+  .navpill.st-answered{ background:#2563EB; border-color:#2563EB; color:#fff; }
+  .navpill.st-flagged{ background:#FEF3C7; border-color:#F59E0B; color:#92400E; }
+  .navpill.st-active{ box-shadow:0 0 0 2.5px #2563EB, 0 0 0 5px #DBEAFE; }
+
+  .scrollbar-thin::-webkit-scrollbar{ width:7px; height:7px; }
+  .scrollbar-thin::-webkit-scrollbar-thumb{ background:#CBD5E1; border-radius:99px; }
+  .scrollbar-thin::-webkit-scrollbar-track{ background:transparent; }
+
+  @keyframes fadeUp{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
+  .anim-fade-up{ animation: fadeUp .28s cubic-bezier(.2,.7,.3,1); }
+  @keyframes popIn{ from{opacity:0; transform:scale(.94);} to{opacity:1; transform:scale(1);} }
+  .anim-pop{ animation: popIn .18s cubic-bezier(.2,.7,.3,1); }
+
+  input[type=range].slider-blue{ -webkit-appearance:none; height:6px; border-radius:99px; background:#DBEAFE; }
+  input[type=range].slider-blue::-webkit-slider-thumb{
+    -webkit-appearance:none; width:20px; height:20px; border-radius:99px; background:#2563EB;
+    border:3px solid #fff; box-shadow:0 2px 8px rgba(37,99,235,.4); cursor:pointer; margin-top:-7px;
+  }
+  input[type=range].slider-blue::-moz-range-thumb{
+    width:20px; height:20px; border-radius:99px; background:#2563EB; border:3px solid #fff;
+    box-shadow:0 2px 8px rgba(37,99,235,.4); cursor:pointer;
+  }
+  input[type=range].slider-blue::-webkit-slider-runnable-track{ height:6px; border-radius:99px; }
+  input[type=range].slider-blue::-moz-range-track{ height:6px; border-radius:99px; background:#DBEAFE; }
+
+  .gauge-ring{ transition: stroke-dashoffset 1s cubic-bezier(.16,1,.3,1); }
+
+  @media print{ body{ background:#fff; } }
+  #print-report-portal{ position:absolute; top:0; left:0; width:0; height:0; overflow:hidden; z-index:-1; }
+  #print-report{ width:794px; background:#fff; }
+</style>
+</head>
+<body class="min-h-screen antialiased">
+<div id="app"></div>
+<script>
+const EXAM_DATA = [{"code":"26MATBLGBRLM01SU-000000-1001","level":"LOTS","type":"pg","elemen":"Bilangan","sub":"Bilangan Real","ind":"Menentukan gabungan atau irisan dari beberapa himpunan bilangan.","stem":"<p>Diberikan tiga himpunan bilangan sebagai berikut:</p>\n$$A=\\{x\\mid x<8,\\ x\\in \\text{Bilangan Asli}\\}$$\n$$B=\\{x\\mid x\\text{ bilangan genap},\\ x\\in \\text{Bilangan Cacah}\\}$$\n$$C=\\{x\\mid x\\le 11,\\ x\\in \\text{Bilangan Prima}\\}$$\n<p>Berdasarkan himpunan-himpunan tersebut, hasil dari $(A\\cap B)\\cup C$ adalah ....</p>","options":["$\\{2, 3, 4, 5, 6, 7\\}$","$\\{2, 3, 5, 7, 11\\}$","$\\{2, 3, 4, 5, 6, 7, 11\\}$","$\\{0, 2, 3, 4, 5, 6, 7, 11\\}$","$\\{1, 2, 3, 4, 5, 6, 7, 11\\}$"],"answer":2,"explanation":"<p>$A=\\{1,2,3,4,5,6,7\\}$ (bilangan asli kurang dari 8).</p><p>$B=\\{0,2,4,6,8,\\dots\\}$ (bilangan cacah genap).</p><p>$C=\\{2,3,5,7,11\\}$ (bilangan prima $\\le11$).</p><p>Irisan: $A\\cap B=\\{2,4,6\\}$.</p><p>Gabungan: $(A\\cap B)\\cup C=\\{2,4,6\\}\\cup\\{2,3,5,7,11\\}=\\{2,3,4,5,6,7,11\\}$.</p><p><b>Jawaban: {2, 3, 4, 5, 6, 7, 11} (C).</b></p>","no":1},{"code":"26MATBLGBRLM01SU-000000-1002","level":"LOTS","type":"pg","elemen":"Bilangan","sub":"Bilangan Real","ind":"Menyederhanakan bentuk bilangan berpangkat bulat atau pecahan dengan menggunakan sifat-sifat operasi bilangan berpangkat.","stem":"<p>Bentuk sederhana dari $\\dfrac{5^{\\frac{2}{3}}\\times 8^{\\frac{3}{2}}}{2^{\\frac{5}{2}}\\times 25^{\\frac{5}{6}}}$ adalah ....</p>","options":["$\\dfrac{1}{5}$","$\\dfrac{2}{5}$","$\\dfrac{4}{5}$","$\\dfrac{5}{4}$","$\\dfrac{5}{2}$"],"answer":2,"explanation":"<p>Nyatakan setiap bilangan sebagai pangkat dari basis prima 2 dan 5: $5=5,\\ 8=2^3,\\ 2=2,\\ 25=5^2$.</p>\n$$\\frac{5^{\\frac23}\\times(2^3)^{\\frac32}}{2^{\\frac52}\\times(5^2)^{\\frac56}}=\\frac{5^{\\frac23}\\times2^{\\frac92}}{2^{\\frac52}\\times5^{\\frac53}}=2^{\\frac92-\\frac52}\\times5^{\\frac23-\\frac53}=2^2\\times5^{-1}=\\frac45$$\n<p><b>Jawaban: 4/5 (C).</b></p>","no":2},{"code":"26MATBLGBRLM02SU-000000-1003","level":"HOTS","type":"kat","elemen":"Bilangan","sub":"Bilangan Real","ind":"Menerapkan sifat operasi hitung bilangan asli (penjumlahan, pengurangan, perkalian, dan pembagian) pada konteks permasalahan matematika yang kompleks.","stem":"<p>Operasi biner $\\odot$ didefinisikan sebagai $a\\odot b=\\dfrac{(a-b)^2+2ab}{a+b}$ untuk setiap bilangan real tidak negatif $a$ dan $b$ dengan $a+b\\ne0$.</p><p>Jika $a\\odot 3=5$, tentukan <b>Benar</b> atau <b>Salah</b> pada setiap pernyataan berikut!</p>","statements":["$a$ merupakan kelipatan dari 2.","$a$ merupakan bilangan prima.","$a\\odot 1=\\dfrac{37}{7}$"],"answer":["B","S","B"],"explanation":"<p>Substitusikan $b=3$: $(a-3)^2+2a(3)=a^2-6a+9+6a=a^2+9$, sehingga $a\\odot3=\\dfrac{a^2+9}{a+3}$.</p>\n$$\\frac{a^2+9}{a+3}=5\\Rightarrow a^2+9=5a+15\\Rightarrow a^2-5a-6=0\\Rightarrow(a-6)(a+1)=0$$\n<p>Karena $a$ bilangan real tidak negatif, diperoleh $a=6$ ($a=-1$ ditolak).</p>\n<ol><li>$a=6$ merupakan kelipatan 2 &rarr; <b>Benar</b>.</li><li>$6=2\\times3$ bukan bilangan prima &rarr; <b>Salah</b>.</li><li>$a\\odot1=\\dfrac{(6-1)^2+2(6)(1)}{6+1}=\\dfrac{25+12}{7}=\\dfrac{37}{7}$ &rarr; <b>Benar</b>.</li></ol>\n<p><b>Jawaban: Benar, Salah, Benar.</b></p>","no":3},{"code":"26MATALJFNGM07SU-000000-1004","level":"LOTS","type":"pg","elemen":"Aljabar","sub":"Fungsi","ind":"Menentukan nilai invers suatu fungsi dan penerapannya dalam permasalahan kontekstual sehari-hari.","stem":"<p>Seorang peneliti memodelkan kenaikan permukaan air laut akibat pemanasan global yang terjadi dengan fungsi linear berikut:</p>$$y=0{,}05x-100{,}7$$<p>dengan $x$ mewakili tahun dan $y$ mewakili kenaikan permukaan air laut dalam sentimeter.</p><p>Pada tahun berapakah kenaikan permukaan air laut diperkirakan mencapai 1,3 cm?</p>","options":["Tahun 2000.","Tahun 2010.","Tahun 2030.","Tahun 2040.","Tahun 2350."],"answer":3,"explanation":"<p>Substitusikan $y=1{,}3$ ke fungsi:</p>$$1{,}3=0{,}05x-100{,}7\\;\\Rightarrow\\;0{,}05x=102\\;\\Rightarrow\\;x=2040$$<p><b>Jawaban: Tahun 2040 (D).</b></p>","no":4},{"code":"26MATALJFNGM08SU-000000-1005","level":"HOTS","type":"pg","elemen":"Aljabar","sub":"Fungsi","ind":"Mengidentifikasi syarat komposisi dua fungsi serta penerapannya dalam permasalahan kontekstual sehari-hari.","stem":"<p>Bimbingan Belajar \"Kholis Cerdas\" memberikan potongan biaya kursus kepada 40 pendaftar pertama, sedangkan harga normal berlaku untuk pendaftar lainnya. Biaya kursus setelah mendapatkan potongan harga dapat dihitung dengan fungsi berikut:</p>$$y=0{,}85x$$<p>dengan $x$ adalah biaya kursus mula-mula dan $y$ adalah biaya setelah potongan harga.</p><p>Selain itu, bagi siswa yang berprestasi akan mendapat tambahan potongan harga yang besarnya disesuaikan dengan nilai rapor mereka. Setelah mendapatkan tambahan potongan harga maka biaya akhir kursus menjadi sebagai berikut:</p>$$g(y)=\\begin{cases}0{,}75y, & \\text{jika nilai rapor di atas } 90\\\\0{,}85y, & \\text{jika nilai rapor } 85\\text{--}90\\end{cases}$$<p>dengan $g(y)$ adalah biaya akhir setelah tambahan diskon.</p><p>Salah satu siswa bernama Kholis, merupakan pendaftar ke-40 dan membayar biaya kursus sebesar Rp340.000,00. Setelah itu, datang empat siswa lainnya yang juga ingin mengikuti kursus dengan informasi berikut:</p><table class=\"q-table\"><thead><tr><th>Nama</th><th>Nilai Rapor</th><th>Uang yang dimiliki (Rp)</th></tr></thead><tbody><tr><td>Andi</td><td>90</td><td>300.000</td></tr><tr><td>Budi</td><td>92</td><td>250.000</td></tr><tr><td>Cici</td><td>88</td><td>290.000</td></tr><tr><td>Dini</td><td>95</td><td>250.000</td></tr></tbody></table><p>Dengan uang yang dimiliki, siapakah siswa yang pasti dapat mengikuti kursus?</p>","options":["Andi.","Andi dan Cici.","Andi, Cici, dan Budi.","Andi, Budi, Cici, dan Dini.","Budi dan Dini."],"answer":1,"explanation":"<p>Kholis (pendaftar ke-40) membayar $y=0{,}85x=$Rp340.000,00, sehingga biaya kursus mula-mula $x=$Rp340.000,00$\\div0{,}85=$Rp400.000,00.</p><p>Keempat siswa baru datang setelah pendaftar ke-40, sehingga mereka juga membayar $y=0{,}85\\times400.000=$Rp340.000,00 sebelum diskon tambahan. Biaya akhir $g(y)$ dihitung berdasarkan nilai rapor, lalu dibandingkan dengan uang yang dimiliki:</p><table class=\"q-table\"><thead><tr><th>Nama</th><th>Rapor</th><th>Tarif $g(y)$</th><th>Biaya akhir</th><th>Uang</th><th>Cukup?</th></tr></thead><tbody><tr><td>Andi</td><td>90</td><td>$0{,}85y$</td><td>Rp289.000</td><td>Rp300.000</td><td>Ya</td></tr><tr><td>Budi</td><td>92</td><td>$0{,}75y$</td><td>Rp255.000</td><td>Rp250.000</td><td>Tidak</td></tr><tr><td>Cici</td><td>88</td><td>$0{,}85y$</td><td>Rp289.000</td><td>Rp290.000</td><td>Ya</td></tr><tr><td>Dini</td><td>95</td><td>$0{,}75y$</td><td>Rp255.000</td><td>Rp250.000</td><td>Tidak</td></tr></tbody></table><p>Siswa yang pasti dapat mengikuti kursus adalah yang uangnya cukup, yaitu <b>Andi dan Cici</b>.</p>","no":5},{"code":"26MATALJBDRM09SU-000000-1006","level":"LOTS","type":"pg","elemen":"Aljabar","sub":"Barisan dan Deret","ind":"Menyelesaikan permasalahan kontekstual sehari-hari yang berkaitan dengan barisan dan deret bilangan aritmetika.","stem":"<p>Pada saat pertandingan bulu tangkis Indonesia melawan Malaysia, kelompok pendukung tim Indonesia akan duduk membentuk koreo dengan beberapa orang memegang kertas berwarna yang dibentangkan. Total kertas berwarna yang dipegang oleh pendukung di barisan kursi paling bawah adalah sebanyak 1.200 lembar, kemudian di baris kedua sebanyak 1.550 lembar, dan semakin bertambah pada barisan kursi berikutnya dengan pola penambahan yang sama.</p><p>Jika pola penambahan tersebut berlaku sampai pada baris kursi kesepuluh, maka berapa banyak penonton yang memegang kertas koreo di baris ke-6?</p>","options":["2.600 orang.","2.950 orang.","3.300 orang.","3.650 orang.","4.000 orang."],"answer":1,"explanation":"<p>Barisan aritmetika dengan suku pertama $a=1.200$ dan beda $b=1.550-1.200=350$.</p>$$U_6=a+(6-1)b=1.200+5\\times350=2.950$$<p><b>Jawaban: 2.950 orang (B).</b></p>","no":6},{"code":"26MATALJBDRM10SU-000000-1007","level":"MOTS","type":"mcma","elemen":"Aljabar","sub":"Barisan dan Deret","ind":"Menyelesaikan permasalahan kontekstual sehari-hari yang berkaitan dengan konsep barisan dan deret bilangan geometri.","stem":"<p>Seorang pasien dengan kadar gula darah tinggi menjalani terapi menggunakan obat penurun kadar gula darah. Pada hari pertama, kadar gula darah dalam tubuhnya tercatat 40 mg/dL di atas ambang normal. Obat bekerja menurunkan kelebihan kadar gula darah tersebut sebesar 30% setiap hari secara konsisten. Beberapa hal yang perlu diperhatikan dalam mengonsumsi obat penurun gula darah:</p><ul class=\"list-disc pl-6\"><li>Pasien mulai merasa lebih nyaman saat kelebihan kadar gula darah berada di bawah 20 mg/dL.</li><li>Pasien dianggap sembuh secara klinis jika kelebihan kadar gula darah telah kurang dari 8 mg/dL.</li></ul><p>Pada hari keberapa saja pasien merasa nyaman namun belum dianggap sembuh secara klinis? Jawaban benar lebih dari satu.</p>","options":["Hari ke-2","Hari ke-3","Hari ke-4","Hari ke-5","Hari ke-6"],"answer":[1,2,3],"explanation":"<p>Barisan geometri dengan suku awal $40$ dan rasio $0{,}7$ (turun 30% setiap hari): $U_n=40\\times(0{,}7)^{n-1}$.</p><table class=\"q-table\"><thead><tr><th>Hari</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th></tr></thead><tbody><tr><td>Kelebihan gula darah (mg/dL)</td><td>40</td><td>28</td><td>19,6</td><td>13,72</td><td>9,604</td><td>6,7228</td><td>4,706</td></tr></tbody></table><p>\"Nyaman\" jika nilai $<20$, dan \"sembuh klinis\" jika nilai $<8$. Hari ke-1 dan ke-2 belum nyaman ($\\ge20$). Hari ke-3, ke-4, ke-5 sudah nyaman namun belum $<8$ (belum sembuh klinis). Hari ke-6 dan ke-7 sudah dianggap sembuh klinis ($<8$).</p><p><b>Jawaban: Hari ke-3, hari ke-4, dan hari ke-5.</b></p>","no":7},{"code":"26MATALJPSLM04SU-000000-1008","level":"MOTS","type":"pg","elemen":"Aljabar","sub":"Persamaan dan Pertidaksamaan Linear","ind":"Memodelkan permasalahan kontekstual sehari-hari atau grafik suatu daerah penyelesaian ke dalam bentuk sistem pertidaksamaan linear dua variabel.","stem":"<p>Perhatikan gambar berikut.</p><svg viewBox=\"0 0 340 210\" width=\"340\" height=\"210\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"Ilustrasi soal\" style=\"width:100%;max-width:340px;height:auto;display:block;margin:.6rem auto\" font-family=\"Arial,sans-serif\" font-size=\"12\" fill=\"#334155\"><line x1=\"20\" y1=\"170\" x2=\"320\" y2=\"170\" stroke=\"#94a3b8\" stroke-width=\"1.2\" /><path d=\"M320 170 l-8 -4 v8 z\" fill=\"#94a3b8\"/><text x=\"330\" y=\"174\" >x</text><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"200\" stroke=\"#94a3b8\" stroke-width=\"1.2\" /><path d=\"M170 10 l-4 8 h8 z\" fill=\"#94a3b8\"/><text x=\"166\" y=\"4\" >y</text><polygon points=\"68,170 170,119 221,170\" fill=\"#dbeafe\" stroke=\"#0f172a\" stroke-width=\"1.6\" stroke-linejoin=\"round\" /><line x1=\"68\" y1=\"170\" x2=\"244.8\" y2=\"95.19999999999999\" stroke=\"#0f172a\" stroke-width=\"1.4\" /><line x1=\"170\" y1=\"119\" x2=\"246.5\" y2=\"195.5\" stroke=\"#0f172a\" stroke-width=\"1.4\" /><circle cx=\"68\" cy=\"170\" r=\"3\" fill=\"#0f172a\"/><circle cx=\"170\" cy=\"119\" r=\"3\" fill=\"#0f172a\"/><circle cx=\"221\" cy=\"170\" r=\"3\" fill=\"#0f172a\"/><text x=\"60\" y=\"184\" font-size=\"11\">A(-6,0)</text><text x=\"160\" y=\"111\" font-size=\"11\">B(0,3)</text><text x=\"227\" y=\"184\" font-size=\"11\">C(3,0)</text><text x=\"248.2\" y=\"98.6\" font-style=\"italic\" font-size=\"12\">f</text><text x=\"249.9\" y=\"202.3\" font-style=\"italic\" font-size=\"12\">g</text></svg>","post":"<p>Daerah yang diarsir pada gambar tersebut merupakan himpunan penyelesaian dari sistem pertidaksamaan ....</p>","options":["$\\begin{cases}x-2y>-6\\\\x+y\\le3\\\\x\\ge0\\\\y\\ge0\\end{cases}$","$\\begin{cases}x-2y\\ge-6\\\\x+y\\ge3\\\\y\\ge0\\end{cases}$","$\\begin{cases}x-2y\\ge-6\\\\x+y\\le3\\\\y\\ge0\\end{cases}$","$\\begin{cases}2x-y\\le6\\\\x+y\\le3\\\\y\\ge0\\end{cases}$","$\\begin{cases}2x-y>6\\\\x+y\\le3\\\\x\\ge0\\\\y\\ge0\\end{cases}$"],"answer":2,"explanation":"<p>Garis $f$ melalui $A(-6,0)$ dan $B(0,3)$: gradien $=\\dfrac{3-0}{0-(-6)}=\\dfrac12$, persamaan $x-2y=-6$. Uji titik $(0,0)$ yang berada di daerah arsiran: $0-0=0\\ge-6$, sehingga $x-2y\\ge-6$.</p><p>Garis $g$ melalui $B(0,3)$ dan $C(3,0)$: $x+y=3$. Uji $(0,0)$: $0\\le3$, sehingga $x+y\\le3$.</p><p>Daerah yang diarsir berada di atas sumbu $x$, sehingga $y\\ge0$. Karena daerah arsiran juga mencakup nilai $x$ negatif (di sekitar titik $A$), maka syarat $x\\ge0$ <b>tidak</b> berlaku.</p><p><b>Jawaban:</b> Sistem $\\{x-2y\\ge-6,\\ x+y\\le3,\\ y\\ge0\\}$ (C).</p>","no":8},{"code":"26MATALJPSLM05SU-000000-1009","level":"MOTS","type":"pg","elemen":"Aljabar","sub":"Persamaan dan Pertidaksamaan Linear","ind":"Menyelesaikan permasalahan kontekstual sehari-hari yang dapat dimodelkan ke dalam bentuk sistem persamaan atau sistem pertidaksamaan linear multivariabel (maksimal 3 variabel).","stem":"<p>Toko Roti \"Ceria\" menjual roti dalam bentuk paket. Harga paket ditentukan dari total harga roti yang digunakan dalam paket tersebut. Adapun tiga jenis paket yang biasa disiapkan beserta harga per paketnya diberikan pada tabel berikut.</p><table class=\"q-table\"><thead><tr><th>Paket</th><th>Komposisi</th><th>Harga</th></tr></thead><tbody><tr><td>Paket A</td><td>2 roti cokelat, 3 roti keju, 2 roti pisang</td><td>Rp58.000,00</td></tr><tr><td>Paket B</td><td>3 roti cokelat, 1 roti keju, 4 roti pisang</td><td>Rp64.000,00</td></tr><tr><td>Paket C</td><td>2 roti cokelat, 2 roti keju, 5 roti pisang</td><td>Rp65.000,00</td></tr></tbody></table><p>Bila seorang pembeli ingin membeli paket B namun ingin menambah 2 roti cokelat dan 3 roti keju dengan harga satuan, maka total harga yang harus dibayar pembeli tersebut adalah ....</p>","options":["Rp100.000,00","Rp108.000,00","Rp112.000,00","Rp118.000,00","Rp124.000,00"],"answer":2,"explanation":"<p>Misalkan harga satuan roti cokelat $=c$, roti keju $=k$, roti pisang $=p$. Dari tabel paket diperoleh sistem persamaan:</p>$$\\begin{cases}2c+3k+2p=58.000\\\\3c+k+4p=64.000\\\\2c+2k+5p=65.000\\end{cases}$$<p>Dengan eliminasi/substitusi, diperoleh $c=$Rp12.000,00, $k=$Rp8.000,00, dan $p=$Rp5.000,00.</p><p>Total harga = harga Paket B + 2 roti cokelat + 3 roti keju:</p>$$=64.000+2(12.000)+3(8.000)=64.000+24.000+24.000=112.000$$<p><b>Jawaban: Rp112.000,00 (C).</b></p>","no":9},{"code":"26MATGMPGEOM11SU-000000-1010","level":"MOTS","type":"mcma","elemen":"Geometri dan Pengukuran","sub":"Objek Geometri","ind":"Mengidentifikasi hubungan antar dua garis atau antar dua sudut.","stem":"<p>Perhatikan gambar berikut!</p><svg viewBox=\"0 0 340 300\" width=\"340\" height=\"300\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"Ilustrasi soal\" style=\"width:100%;max-width:340px;height:auto;display:block;margin:.6rem auto\" font-family=\"Arial,sans-serif\" font-size=\"12\" fill=\"#334155\"><line x1=\"50\" y1=\"90\" x2=\"290\" y2=\"90\" stroke=\"#0f172a\" stroke-width=\"1.6\" /><path d=\"M50 90 l10 -4 v8 z\" fill=\"#0f172a\"/><text x=\"300\" y=\"94\" >k</text><line x1=\"50\" y1=\"220\" x2=\"290\" y2=\"220\" stroke=\"#0f172a\" stroke-width=\"1.6\" /><path d=\"M50 220 l10 -4 v8 z\" fill=\"#0f172a\"/><text x=\"300\" y=\"224\" >l</text><line x1=\"80\" y1=\"278\" x2=\"200\" y2=\"40\" stroke=\"#0f172a\" stroke-width=\"1.6\" /><path d=\"M80 278 l13 -3 l-3 13 z\" fill=\"#0f172a\"/><text x=\"206\" y=\"32\" font-style=\"italic\">m</text><text x=\"185\" y=\"72\" text-anchor=\"middle\" fill=\"#b91c1c\" font-weight=\"700\">1</text><text x=\"148\" y=\"72\" text-anchor=\"middle\" fill=\"#b91c1c\" font-weight=\"700\">2</text><text x=\"148\" y=\"110\" text-anchor=\"middle\" fill=\"#b91c1c\" font-weight=\"700\">3</text><text x=\"188\" y=\"110\" text-anchor=\"middle\" fill=\"#b91c1c\" font-weight=\"700\">4</text><text x=\"128\" y=\"193\" text-anchor=\"middle\" fill=\"#1d4ed8\" font-weight=\"700\">5</text><text x=\"88\" y=\"193\" text-anchor=\"middle\" fill=\"#1d4ed8\" font-weight=\"700\">6</text><text x=\"88\" y=\"232\" text-anchor=\"middle\" fill=\"#1d4ed8\" font-weight=\"700\">7</text><text x=\"128\" y=\"232\" text-anchor=\"middle\" fill=\"#1d4ed8\" font-weight=\"700\">8</text></svg>","post":"<p>Garis $k$ sejajar garis $l$ dan dipotong oleh garis $m$ sehingga terbentuk delapan sudut seperti pada gambar.</p><p>Berdasarkan gambar tersebut, pasangan sudut manakah yang jumlahnya $180°$? Jawaban benar lebih dari satu.</p>","options":["∠1 dan ∠5","∠2 dan ∠7","∠3 dan ∠6","∠4 dan ∠8","∠1 dan ∠6"],"answer":[1,2,4],"explanation":"<p>Karena $k/\\!/l$, transversal $m$ membentuk dua ukuran sudut yang saling berpelurus di setiap titik potong: sudut lancip ($\\angle1,\\angle3,\\angle5,\\angle7$) dan sudut tumpul ($\\angle2,\\angle4,\\angle6,\\angle8$).</p><ul><li>$\\angle1$ dan $\\angle5$ sama-sama sudut lancip (sehadap, sama besar) &rarr; jumlahnya <b>bukan</b> $180°$.</li><li>$\\angle2$ (tumpul) dan $\\angle7$ (lancip) &rarr; jumlahnya <b>$180°$</b>.</li><li>$\\angle3$ (lancip) dan $\\angle6$ (tumpul) &rarr; jumlahnya <b>$180°$</b>.</li><li>$\\angle4$ dan $\\angle8$ sama-sama sudut tumpul (sehadap, sama besar) &rarr; jumlahnya <b>bukan</b> $180°$.</li><li>$\\angle1$ (lancip) dan $\\angle6$ (tumpul) berpelurus &rarr; jumlahnya <b>$180°$</b>.</li></ul><p><b>Jawaban: ∠2 & ∠7, ∠3 & ∠6, dan ∠1 & ∠6.</b></p>","no":10},{"code":"26MATDPLDATM20SU-000000-1021","level":"LOTS","type":"mcma","elemen":"Data dan Peluang","sub":"Data","ind":"Menginterpretasi penyajian data dalam bentuk diagram garis.","stem":"<p>Banyak siswa yang lulus di sekolah Yayasan Pelita beragam setiap tahunnya. Berikut adalah data banyak lulusan di tiga sekolah menengah swasta milik Yayasan Pelita.</p><svg viewBox=\"0 0 430 345\" width=\"430\" height=\"345\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"Ilustrasi soal\" style=\"width:100%;max-width:430px;height:auto;display:block;margin:.6rem auto\" font-family=\"Arial,sans-serif\" font-size=\"12\" fill=\"#334155\"><line x1=\"60\" y1=\"310\" x2=\"330\" y2=\"310\" stroke=\"#e2e8f0\" stroke-width=\"1\" /><text x=\"52\" y=\"314\" text-anchor=\"end\" font-size=\"10\">200</text><line x1=\"60\" y1=\"262.0833333333333\" x2=\"330\" y2=\"262.0833333333333\" stroke=\"#e2e8f0\" stroke-width=\"1\" /><text x=\"52\" y=\"266.0833333333333\" text-anchor=\"end\" font-size=\"10\">250</text><line x1=\"60\" y1=\"214.16666666666666\" x2=\"330\" y2=\"214.16666666666666\" stroke=\"#e2e8f0\" stroke-width=\"1\" /><text x=\"52\" y=\"218.16666666666666\" text-anchor=\"end\" font-size=\"10\">300</text><line x1=\"60\" y1=\"166.25\" x2=\"330\" y2=\"166.25\" stroke=\"#e2e8f0\" stroke-width=\"1\" /><text x=\"52\" y=\"170.25\" text-anchor=\"end\" font-size=\"10\">350</text><line x1=\"60\" y1=\"118.33333333333331\" x2=\"330\" y2=\"118.33333333333331\" stroke=\"#e2e8f0\" stroke-width=\"1\" /><text x=\"52\" y=\"122.33333333333331\" text-anchor=\"end\" font-size=\"10\">400</text><line x1=\"60\" y1=\"80\" x2=\"60\" y2=\"310\" stroke=\"#94a3b8\" stroke-width=\"1.2\" /><line x1=\"60\" y1=\"310\" x2=\"330\" y2=\"310\" stroke=\"#94a3b8\" stroke-width=\"1.2\" /><text x=\"60\" y=\"326\" text-anchor=\"middle\" font-size=\"10\">2016</text><text x=\"92\" y=\"326\" text-anchor=\"middle\" font-size=\"10\">2017</text><text x=\"124\" y=\"326\" text-anchor=\"middle\" font-size=\"10\">2018</text><text x=\"156\" y=\"326\" text-anchor=\"middle\" font-size=\"10\">2019</text><text x=\"188\" y=\"326\" text-anchor=\"middle\" font-size=\"10\">2020</text><text x=\"220\" y=\"326\" text-anchor=\"middle\" font-size=\"10\">2021</text><text x=\"252\" y=\"326\" text-anchor=\"middle\" font-size=\"10\">2022</text><text x=\"284\" y=\"326\" text-anchor=\"middle\" font-size=\"10\">2023</text><text x=\"316\" y=\"326\" text-anchor=\"middle\" font-size=\"10\">2024</text><line x1=\"60\" y1=\"214.16666666666666\" x2=\"92\" y2=\"204.58333333333331\" stroke=\"#16a34a\" stroke-width=\"2.2\" /><line x1=\"92\" y1=\"204.58333333333331\" x2=\"124\" y2=\"204.58333333333331\" stroke=\"#16a34a\" stroke-width=\"2.2\" /><line x1=\"124\" y1=\"204.58333333333331\" x2=\"156\" y2=\"214.16666666666666\" stroke=\"#16a34a\" stroke-width=\"2.2\" /><line x1=\"156\" y1=\"214.16666666666666\" x2=\"188\" y2=\"209.375\" stroke=\"#16a34a\" stroke-width=\"2.2\" /><line x1=\"188\" y1=\"209.375\" x2=\"220\" y2=\"204.58333333333331\" stroke=\"#16a34a\" stroke-width=\"2.2\" /><line x1=\"220\" y1=\"204.58333333333331\" x2=\"252\" y2=\"185.41666666666666\" stroke=\"#16a34a\" stroke-width=\"2.2\" /><line x1=\"252\" y1=\"185.41666666666666\" x2=\"284\" y2=\"166.25\" stroke=\"#16a34a\" stroke-width=\"2.2\" /><line x1=\"284\" y1=\"166.25\" x2=\"316\" y2=\"156.66666666666666\" stroke=\"#16a34a\" stroke-width=\"2.2\" /><circle cx=\"60\" cy=\"214.16666666666666\" r=\"3\" fill=\"#16a34a\"/><circle cx=\"92\" cy=\"204.58333333333331\" r=\"3\" fill=\"#16a34a\"/><circle cx=\"124\" cy=\"204.58333333333331\" r=\"3\" fill=\"#16a34a\"/><circle cx=\"156\" cy=\"214.16666666666666\" r=\"3\" fill=\"#16a34a\"/><circle cx=\"188\" cy=\"209.375\" r=\"3\" fill=\"#16a34a\"/><circle cx=\"220\" cy=\"204.58333333333331\" r=\"3\" fill=\"#16a34a\"/><circle cx=\"252\" cy=\"185.41666666666666\" r=\"3\" fill=\"#16a34a\"/><circle cx=\"284\" cy=\"166.25\" r=\"3\" fill=\"#16a34a\"/><circle cx=\"316\" cy=\"156.66666666666666\" r=\"3\" fill=\"#16a34a\"/><line x1=\"60\" y1=\"271.6666666666667\" x2=\"92\" y2=\"257.2916666666667\" stroke=\"#dc2626\" stroke-width=\"2.2\" /><line x1=\"92\" y1=\"257.2916666666667\" x2=\"124\" y2=\"233.33333333333331\" stroke=\"#dc2626\" stroke-width=\"2.2\" /><line x1=\"124\" y1=\"233.33333333333331\" x2=\"156\" y2=\"204.58333333333331\" stroke=\"#dc2626\" stroke-width=\"2.2\" /><line x1=\"156\" y1=\"204.58333333333331\" x2=\"188\" y2=\"195\" stroke=\"#dc2626\" stroke-width=\"2.2\" /><line x1=\"188\" y1=\"195\" x2=\"220\" y2=\"185.41666666666666\" stroke=\"#dc2626\" stroke-width=\"2.2\" /><line x1=\"220\" y1=\"185.41666666666666\" x2=\"252\" y2=\"195\" stroke=\"#dc2626\" stroke-width=\"2.2\" /><line x1=\"252\" y1=\"195\" x2=\"284\" y2=\"204.58333333333331\" stroke=\"#dc2626\" stroke-width=\"2.2\" /><line x1=\"284\" y1=\"204.58333333333331\" x2=\"316\" y2=\"214.16666666666666\" stroke=\"#dc2626\" stroke-width=\"2.2\" /><circle cx=\"60\" cy=\"271.6666666666667\" r=\"3\" fill=\"#dc2626\"/><circle cx=\"92\" cy=\"257.2916666666667\" r=\"3\" fill=\"#dc2626\"/><circle cx=\"124\" cy=\"233.33333333333331\" r=\"3\" fill=\"#dc2626\"/><circle cx=\"156\" cy=\"204.58333333333331\" r=\"3\" fill=\"#dc2626\"/><circle cx=\"188\" cy=\"195\" r=\"3\" fill=\"#dc2626\"/><circle cx=\"220\" cy=\"185.41666666666666\" r=\"3\" fill=\"#dc2626\"/><circle cx=\"252\" cy=\"195\" r=\"3\" fill=\"#dc2626\"/><circle cx=\"284\" cy=\"204.58333333333331\" r=\"3\" fill=\"#dc2626\"/><circle cx=\"316\" cy=\"214.16666666666666\" r=\"3\" fill=\"#dc2626\"/><line x1=\"60\" y1=\"290.8333333333333\" x2=\"92\" y2=\"262.0833333333333\" stroke=\"#2563eb\" stroke-width=\"2.2\" /><line x1=\"92\" y1=\"262.0833333333333\" x2=\"124\" y2=\"233.33333333333331\" stroke=\"#2563eb\" stroke-width=\"2.2\" /><line x1=\"124\" y1=\"233.33333333333331\" x2=\"156\" y2=\"214.16666666666666\" stroke=\"#2563eb\" stroke-width=\"2.2\" /><line x1=\"156\" y1=\"214.16666666666666\" x2=\"188\" y2=\"195\" stroke=\"#2563eb\" stroke-width=\"2.2\" /><line x1=\"188\" y1=\"195\" x2=\"220\" y2=\"180.625\" stroke=\"#2563eb\" stroke-width=\"2.2\" /><line x1=\"220\" y1=\"180.625\" x2=\"252\" y2=\"166.25\" stroke=\"#2563eb\" stroke-width=\"2.2\" /><line x1=\"252\" y1=\"166.25\" x2=\"284\" y2=\"137.5\" stroke=\"#2563eb\" stroke-width=\"2.2\" /><line x1=\"284\" y1=\"137.5\" x2=\"316\" y2=\"99.16666666666666\" stroke=\"#2563eb\" stroke-width=\"2.2\" /><circle cx=\"60\" cy=\"290.8333333333333\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"92\" cy=\"262.0833333333333\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"124\" cy=\"233.33333333333331\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"156\" cy=\"214.16666666666666\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"188\" cy=\"195\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"220\" cy=\"180.625\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"252\" cy=\"166.25\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"284\" cy=\"137.5\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"316\" cy=\"99.16666666666666\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"65\" cy=\"18\" r=\"4\" fill=\"#16a34a\"/><text x=\"73\" y=\"22\" font-size=\"10.5\">SMA Nusantara</text><circle cx=\"195\" cy=\"18\" r=\"4\" fill=\"#dc2626\"/><text x=\"203\" y=\"22\" font-size=\"10.5\">SMA Harapan</text><circle cx=\"310\" cy=\"18\" r=\"4\" fill=\"#2563eb\"/><text x=\"318\" y=\"22\" font-size=\"10.5\">SMK Bangsa</text><text x=\"210\" y=\"340\" text-anchor=\"middle\" font-size=\"11\" font-weight=\"700\">Data Banyak Lulusan Tahun 2016-2024</text></svg>","post":"<p>Berdasarkan grafik tersebut, berikut ini pernyataan mana saja yang tepat mendeskripsikan banyak lulusan di ketiga sekolah milik Yayasan Pelita? Jawaban benar lebih dari satu.</p>","options":["Banyak siswa SMA Nusantara yang lulus selalu bertambah mulai tahun 2019.","Pada tahun 2016-2019, banyak lulusan dari ketiga sekolah di Yayasan Pelita selalu bertambah.","Banyak lulusan SMK Bangsa konsisten naik selama lima tahun terakhir.","Banyak lulusan SMA Harapan tetap sama selama tiga tahun terakhir.","Banyak lulusan ketiga sekolah pada tahun 2021 lebih tinggi dibandingkan tahun 2020."],"answer":[0,2,4],"explanation":"<p><b>Pernyataan 1:</b> Data SMA Nusantara 2019&ndash;2024 adalah 300, 305, 310, 330, 350, 360 &mdash; selalu naik &rarr; <b>Benar</b>.</p><p><b>Pernyataan 2:</b> Pada 2016&ndash;2019, data SMA Nusantara adalah 300, 310, 310, 300 &mdash; sempat tetap lalu turun, tidak selalu bertambah &rarr; <b>Salah</b>.</p><p><b>Pernyataan 3:</b> Data SMK Bangsa 2020&ndash;2024 adalah 320, 335, 350, 380, 420 &mdash; konsisten naik &rarr; <b>Benar</b>.</p><p><b>Pernyataan 4:</b> Data SMA Harapan tiga tahun terakhir (2022&ndash;2024) adalah 320, 310, 300 &mdash; tidak sama &rarr; <b>Salah</b>.</p><p><b>Pernyataan 5:</b> Tahun 2020 ke 2021: SMA Nusantara 305&rarr;310, SMA Harapan 320&rarr;330, SMK Bangsa 320&rarr;335 &mdash; ketiganya naik &rarr; <b>Benar</b>.</p><p><b>Jawaban: pernyataan 1, 3, dan 5.</b></p>","no":11},{"code":"26MATDPLDATM22SU-000000-1022","level":"LOTS","type":"pg","elemen":"Data dan Peluang","sub":"Data","ind":"Menyelesaikan permasalahan kontekstual sehari-hari dengan menerapkan aturan pencacahan (aturan penjumlahan atau aturan perkalian).","stem":"<p>Di sebuah acara pasar kaget RW 05, terdapat 5 lapak yang masing-masing dikelola oleh pedagang yang berbeda, yaitu lapak P, Q, R, S, dan T yang akan disusun berjajar.</p><p>Dalam pasar kaget tersebut, lapak pedagang R (penjual jamu) ingin berada di antara lapak pedagang P dan lapak pedagang T. Banyak kemungkinan susunan atau penataan lapak sesuai keinginan pedagang R tersebut adalah ....</p>","options":["6 susunan","12 susunan","24 susunan","48 susunan","120 susunan"],"answer":1,"explanation":"<p>Karena lapak R harus berada tepat di antara lapak P dan T, ketiganya dapat dianggap sebagai satu blok dengan dua kemungkinan urutan internal: P-R-T atau T-R-P (2 cara).</p><p>Blok ini digabung dengan 2 lapak lainnya (Q dan S) menjadi 3 unit yang dapat disusun dalam $3!=6$ cara.</p><p>Total susunan $=3!\\times2=6\\times2=12$ susunan.</p><p><b>Jawaban: 12 susunan (B).</b></p>","no":12},{"code":"26MATDPLDATM21SU-000000-1023","level":"HOTS","type":"kat","elemen":"Data dan Peluang","sub":"Data","ind":"Menggunakan informasi ukuran pemusatan atau sebaran data untuk melengkapi kumpulan data yang diberikan.","stem":"<p>Perhatikan tabel distribusi data jumlah pengunjung Toko Kue \"Berkah\" pada minggu ke-1 bulan Januari!</p><table class=\"q-table\"><thead><tr><th>Minggu ke-1</th><th>Senin</th><th>Selasa</th><th>Rabu</th><th>Kamis</th><th>Jumat</th></tr></thead><tbody><tr><td>Jumlah Pengunjung</td><td>4</td><td>p</td><td>5</td><td>r</td><td>6</td></tr></tbody></table><p>Pada minggu ke-1 bulan Januari tersebut, diketahui informasi sebagai berikut:</p><ol><li>rata-rata pengunjung toko setiap hari adalah 6 orang,</li><li>selalu ada minimal dua pengunjung namun tidak pernah melebihi 10 pengunjung pada setiap hari buka (Senin&ndash;Jumat), dan</li><li>median dari data pada tabel adalah 6.</li></ol><p>Tentukan <b>Benar</b> atau <b>Salah</b> pada setiap pernyataan berikut terkait jumlah pengunjung Toko Kue \"Berkah\" pada minggu ke-1 bulan Januari tersebut!</p>","statements":["Banyak pengunjung pada hari Selasa pasti selalu lebih banyak dibandingkan hari lain.","Banyak pengunjung pada hari Kamis pasti lebih dari 5 orang.","Banyak pengunjung pada hari Jumat dan Kamis mungkin saja sama."],"answer":["S","S","B"],"explanation":"<p>Rata-rata $=6$ sehingga total pengunjung 5 hari $=5\\times6=30$. Dari $4+p+5+r+6=30$, diperoleh $p+r=15$, dengan $2\\le p,r\\le10$.</p><ol><li>Karena $p$ dapat bernilai 5 (dengan $r=10$), $p$ tidak selalu menjadi nilai terbesar &rarr; <b>Salah</b>.</li><li>Karena $r$ dapat bernilai tepat 5 (misalnya saat $p=10$), maka $r$ tidak pasti lebih dari 5 &rarr; <b>Salah</b>.</li><li>Karena $r$ dapat bernilai 6 (dengan $p=9$, memenuhi $2\\le p,r\\le10$), maka pengunjung hari Jumat (6) dan Kamis ($r$) mungkin saja sama &rarr; <b>Benar</b>.</li></ol><p><b>Jawaban: Salah, Salah, Benar.</b></p>","no":13},{"code":"26MATDPLPLGM23SU-000000-1024","level":"LOTS","type":"pg","elemen":"Data dan Peluang","sub":"Peluang","ind":"Menggunakan berbagai informasi untuk menentukan kondisi yang mungkin atau peluang kejadian dalam permasalahan kontekstual sehari-hari.","stem":"<p>Dalam rangka memperingati ulang tahun ke-15, sebuah supermarket membuat kotak undian yang berisi hadiah untuk para pelanggannya. Terdapat 90 tiket yang dimasukkan ke dalam kotak tersebut. Hadiahnya terbagi dalam dua kategori, yaitu voucher belanja dan peralatan dapur. Untuk hadiah voucher belanja, terdapat 20 tiket senilai Rp40.000,00 dan 16 tiket senilai Rp75.000,00. Untuk hadiah peralatan dapur, terdapat 14 tiket berisi blender mini, 10 tiket berisi termos, dan sisanya tiket kosong.</p><p>Rani menjadi orang pertama yang berkesempatan mengambil satu tiket secara acak dari kotak tersebut.</p><p>Berapakah peluang Rani mengambil tiket yang kosong?</p>","options":["$\\dfrac{1}{9}$","$\\dfrac{1}{6}$","$\\dfrac{1}{4}$","$\\dfrac{1}{3}$","$\\dfrac{2}{5}$"],"answer":3,"explanation":"<p>Total tiket $=90$. Tiket berhadiah $=20+16+14+10=60$ tiket.</p><p>Tiket kosong $=90-60=30$ tiket.</p>$$P(\\text{kosong})=\\frac{30}{90}=\\frac13$$<p><b>Jawaban: 1/3 (D).</b></p>","no":14},{"code":"26MATDPLPLGM24SU-000000-1025","level":"HOTS","type":"pg","elemen":"Data dan Peluang","sub":"Peluang","ind":"Menerapkan konsep peluang kejadian majemuk dalam permasalahan kontekstual sehari-hari.","stem":"<p>Sebuah kantin sekolah mengadakan undian berhadiah dengan rincian kertas di dalam kotak undian sebagai berikut: 7 kertas bertuliskan \"Minuman Gratis\", 5 kertas bertuliskan \"Makanan Gratis\", dan 6 kertas kosong.</p><p>Hanya kertas yang kosong yang akan selalu dikembalikan lagi ke dalam kotak meskipun terambil berkali-kali. Ani akan mengambil satu buah kertas dari kotak undian. Ani adalah orang kelima yang mengambil kertas undian.</p>","post":"<p>Kertas apa sajakah yang mungkin sudah terambil oleh orang-orang sebelumnya sehingga peluang Ani memperoleh minuman atau makanan adalah $\\dfrac{2}{3}$?</p>","options":["1 minuman gratis, 1 makanan gratis, dan 2 kertas kosong.","2 makanan gratis dan 2 minuman gratis.","2 minuman gratis dan 2 kertas kosong.","4 kertas kosong.","4 minuman gratis."],"answer":3,"explanation":"<p>Total kertas $=7+5+6=18$. Kertas kosong selalu dikembalikan (jumlahnya tetap 6), sedangkan kertas berhadiah yang telah terambil tidak dikembalikan.</p><p>Misalkan $x=$ banyak kertas berhadiah (minuman/makanan) yang sudah terambil oleh 4 orang sebelum Ani. Saat Ani mengambil, sisa kertas berhadiah $=12-x$ dan total kertas dalam kotak $=18-x$.</p>$$\\frac{12-x}{18-x}=\\frac23\\;\\Rightarrow\\;3(12-x)=2(18-x)\\;\\Rightarrow\\;36-3x=36-2x\\;\\Rightarrow\\;x=0$$<p>Karena $x=0$, tidak ada kertas berhadiah yang terambil sebelumnya &mdash; artinya keempat pengambilan sebelumnya pasti berupa kertas kosong (yang selalu dikembalikan).</p><p><b>Jawaban: 4 kertas kosong (D).</b></p>","no":15}];
+</script>
+<script>
+/* ============================================================
+   Simulator Ujian & Evaluasi Interaktif — TKA Matematika 2026
+   ============================================================ */
+(function(){
+  "use strict";
+
+  const TOPIC_TITLE = "Matematika (Wajib) SMA/MA/SMK";
+  const N = EXAM_DATA.length;
+  const LEVEL_COUNTS = EXAM_DATA.reduce((a,q)=>{a[q.level]=(a[q.level]||0)+1; return a;},{});
+  const TYPE_LABELS = { pg:'Pilihan Ganda', kat:'PG Kompleks · Kategori', mcma:'PG Kompleks · MCMA' };
+  const TYPE_COUNTS = EXAM_DATA.reduce((a,q)=>{a[q.type]=(a[q.type]||0)+1; return a;},{});
+  const LETTERS = ['A','B','C','D','E','F'];
+
+  const state = {
+    screen: 'start',
+    identity: { name:'', kelas:'', sekolah:'' },
+    durationMin: 30,
+    timeLeftSec: 30*60,
+    timerId: null,
+    currentIndex: 0,
+    answers: {},        // no -> { pg: idx|null, mcma: Set, kat: [ 'B'|'S'|null, ... ] }
+    flagged: new Set(),
+    startedAt: null,
+    finishedAt: null,
+    confirmOpen: false,
+    reviewAll: false,
+    jumpMenuOpen: false,
+  };
+
+  EXAM_DATA.forEach(q=>{
+    if(q.type==='pg') state.answers[q.no] = { pg:null };
+    else if(q.type==='mcma') state.answers[q.no] = { mcma:new Set() };
+    else if(q.type==='kat') state.answers[q.no] = { kat: q.statements.map(()=>null) };
+  });
+
+  const $app = document.getElementById('app');
+
+  function esc(s){ return (s??'').toString().replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function fmtTime(sec){
+    sec = Math.max(0, sec|0);
+    const m = Math.floor(sec/60), s = sec%60;
+    return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  }
+  function pad2(n){ return String(n).padStart(2,'0'); }
+  function fmtDateTime(d){
+    const bulan = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+    return `${pad2(d.getDate())} ${bulan[d.getMonth()]} ${d.getFullYear()}, ${pad2(d.getHours())}:${pad2(d.getMinutes())} WIB`;
+  }
+
+  function isAnswered(q){
+    const a = state.answers[q.no];
+    if(q.type==='pg') return a.pg !== null;
+    if(q.type==='mcma') return a.mcma.size > 0;
+    if(q.type==='kat') return a.kat.every(v=>v!==null);
+    return false;
+  }
+  function isCorrect(q){
+    const a = state.answers[q.no];
+    if(!isAnswered(q)) return false;
+    if(q.type==='pg') return a.pg === q.answer;
+    if(q.type==='mcma'){
+      const want = new Set(q.answer);
+      if(a.mcma.size !== want.size) return false;
+      for(const v of a.mcma) if(!want.has(v)) return false;
+      return true;
+    }
+    if(q.type==='kat') return a.kat.every((v,i)=>v===q.answer[i]);
+    return false;
+  }
+  function answeredCount(){ return EXAM_DATA.filter(isAnswered).length; }
+  function correctCount(){ return EXAM_DATA.filter(q=>isAnswered(q) && isCorrect(q)).length; }
+  function wrongCount(){ return EXAM_DATA.filter(q=>isAnswered(q) && !isCorrect(q)).length; }
+  function unansweredCount(){ return N - answeredCount(); }
+  function scorePct(){ return Math.round((correctCount()/N)*100); }
+
+  function renderMathIn(el){
+    if(window.renderMathInElement){
+      try{
+        renderMathInElement(el, {
+          delimiters: [
+            {left:'$$', right:'$$', display:true},
+            {left:'$', right:'$', display:false},
+          ],
+          throwOnError:false,
+        });
+      }catch(e){ /* noop */ }
+    }
+  }
+  function mountIcons(){
+    if(window.lucide && window.lucide.createIcons){
+      try{ window.lucide.createIcons(); }catch(e){}
+    }
+  }
+
+  function icon(name, cls){
+    return `<i data-lucide="${name}" class="${cls||''}"></i>`;
+  }
+
+  /* ---------------------------------------------------------- render dispatch */
+  function render(){
+    if(state.screen==='start') $app.innerHTML = renderStart();
+    else if(state.screen==='exam') $app.innerHTML = renderExam();
+    else if(state.screen==='result') $app.innerHTML = renderResult();
+    renderMathIn($app);
+    mountIcons();
+    bindEvents();
+    if(state.screen==='exam'){
+      const active = document.querySelector('.navpill.st-active');
+      if(active) active.scrollIntoView({block:'nearest', inline:'nearest'});
+    }
+  }
+
+  /* ============================================================ START SCREEN */
+  function renderStart(){
+    const estMin = N*2;
+    return `
+    <div class="min-h-screen flex items-center justify-center px-4 py-10 sm:py-14">
+      <div class="w-full max-w-3xl">
+        <div class="bg-white border border-slateink-200 rounded-3xl shadow-card overflow-hidden anim-fade-up">
+
+          <div class="relative px-7 sm:px-10 pt-9 pb-8 bg-navy-900 grid-texture overflow-hidden">
+            <div class="absolute -right-16 -top-20 w-64 h-64 rounded-full bg-brand-600/25 blur-3xl"></div>
+            <div class="absolute -left-10 -bottom-24 w-56 h-56 rounded-full bg-brand-500/20 blur-3xl"></div>
+            <div class="relative">
+              <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold tracking-wide text-brand-100 bg-white/10 border border-white/15 rounded-full px-3 py-1">
+                ${icon('graduation-cap','w-3.5 h-3.5')} TRY OUT TKA
+              </span>
+              <h1 class="mt-4 text-white text-2xl sm:[2rem] sm:text-[1.9rem] font-extrabold leading-tight">
+                Simulator Ujian — ${TOPIC_TITLE}
+              </h1>
+              <p class="mt-2.5 text-slateink-300 text-[15px] leading-relaxed max-w-xl">
+                Latihan Tes Kemampuan Akademik dengan ${N} soal lintas elemen: Bilangan, Aljabar, Geometri dan Pengukuran,
+                serta Data dan Peluang &mdash; lengkap dengan pembahasan setiap nomor setelah ujian selesai.
+              </p>
+            </div>
+          </div>
+
+          <div class="px-7 sm:px-10 py-8 space-y-8">
+
+            <div>
+              <h2 class="text-sm font-bold text-navy-900 mb-3.5">Identitas peserta</h2>
+              <div class="grid sm:grid-cols-2 gap-3.5">
+                <label class="block sm:col-span-2">
+                  <span class="text-xs font-semibold text-slateink-600 mb-1.5 block">Nama lengkap <span class="text-bad-600">*</span></span>
+                  <input id="inp-name" type="text" placeholder="Tulis nama lengkapmu"
+                    value="${esc(state.identity.name)}"
+                    class="w-full rounded-xl border border-slateink-200 px-3.5 py-2.5 text-[15px] outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-100 transition"/>
+                </label>
+                <label class="block">
+                  <span class="text-xs font-semibold text-slateink-600 mb-1.5 block">Kelas <span class="text-bad-600">*</span></span>
+                  <input id="inp-kelas" type="text" placeholder="cth. XII IPA 3"
+                    value="${esc(state.identity.kelas)}"
+                    class="w-full rounded-xl border border-slateink-200 px-3.5 py-2.5 text-[15px] outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-100 transition"/>
+                </label>
+                <label class="block">
+                  <span class="text-xs font-semibold text-slateink-600 mb-1.5 block">Asal sekolah <span class="text-bad-600">*</span></span>
+                  <input id="inp-sekolah" type="text" placeholder="cth. SMA Negeri 1"
+                    value="${esc(state.identity.sekolah)}"
+                    class="w-full rounded-xl border border-slateink-200 px-3.5 py-2.5 text-[15px] outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-100 transition"/>
+                </label>
+              </div>
+              <p id="form-err" class="text-xs text-bad-600 font-medium mt-2 hidden">Lengkapi nama, kelas, dan asal sekolah terlebih dahulu.</p>
+            </div>
+
+            <div class="grid grid-cols-3 gap-3">
+              <div class="rounded-2xl border border-slateink-200 bg-slateink-50 px-4 py-3.5">
+                <p class="text-[11px] font-semibold text-slateink-500">Jumlah soal</p>
+                <p class="text-xl font-extrabold text-navy-900 mt-0.5 num-tab">${N}</p>
+              </div>
+              <div class="rounded-2xl border border-slateink-200 bg-slateink-50 px-4 py-3.5">
+                <p class="text-[11px] font-semibold text-slateink-500">Tingkat kesulitan</p>
+                <p class="text-[13px] font-bold text-navy-900 mt-1 leading-snug">${LEVEL_COUNTS.LOTS||0} LOTS · ${LEVEL_COUNTS.MOTS||0} MOTS · ${LEVEL_COUNTS.HOTS||0} HOTS</p>
+              </div>
+              <div class="rounded-2xl border border-slateink-200 bg-slateink-50 px-4 py-3.5">
+                <p class="text-[11px] font-semibold text-slateink-500">Tipe soal</p>
+                <p class="text-[13px] font-bold text-navy-900 mt-1 leading-snug">${TYPE_COUNTS.pg||0} PG · ${TYPE_COUNTS.mcma||0} Kompleks</p>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-sm font-bold text-navy-900">Durasi ujian</span>
+                <span id="dur-label" class="text-sm font-extrabold text-brand-600 num-tab">${state.durationMin} menit</span>
+              </div>
+              <input id="dur-slider" type="range" min="15" max="90" step="5" value="${state.durationMin}" class="w-full slider-blue"/>
+              <div class="flex justify-between text-[11px] text-slateink-400 mt-1.5">
+                <span>15 menit</span>
+                <span>Estimasi ±2 menit/soal (~${estMin} menit)</span>
+                <span>90 menit</span>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="px-7 sm:px-10 pb-9">
+            <button id="btn-start" class="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-brand-600 hover:bg-brand-700 active:scale-[.99] text-white font-bold text-[15px] py-3.5 transition shadow-lg shadow-brand-600/25">
+              Mulai Ujian ${icon('arrow-right','w-4 h-4')}
+            </button>
+          </div>
+        </div>
+        <p class="text-center text-[12px] text-slateink-400 mt-5">Jawabanmu tersimpan otomatis selama sesi ujian berlangsung di perangkat ini.</p>
+      </div>
+    </div>`;
+  }
+
+  /* ============================================================= EXAM SCREEN */
+  function levelBadgeClasses(level){
+    if(level==='HOTS') return 'bg-bad-50 text-bad-700 border-bad-100';
+    if(level==='MOTS') return 'bg-warn-50 text-warn-700 border-warn-100';
+    return 'bg-good-50 text-good-700 border-good-100';
+  }
+
+  function renderQuestionBody(q){
+    let html = `<div class="prose-q math-block text-[15.5px] text-slateink-700">${q.stem||''}</div>`;
+    if(q.img_data){
+      html += `<figure class="my-4">
+        <img src="${q.img_data}" alt="${esc(q.alt||'Ilustrasi soal')}" class="mx-auto max-w-full rounded-xl border border-slateink-200 shadow-sm" loading="lazy"/>
+      </figure>`;
+    }
+    if(q.post){
+      html += `<div class="prose-q math-block text-[15.5px] text-slateink-700 mt-1">${q.post}</div>`;
+    }
+    return html;
+  }
+
+  function renderOptionsInput(q, mode){
+    // mode: 'exam' (interactive) — result screen uses a different renderer
+    const a = state.answers[q.no];
+    if(q.type==='pg'){
+      return `<div class="space-y-2.5 mt-5" data-opts>
+        ${q.options.map((opt,i)=>`
+          <label class="opt-shell ${a.pg===i?'is-selected':''}" data-pg-opt="${i}" data-qno="${q.no}">
+            <span class="opt-radio"><span class="opt-radio-dot"></span></span>
+            <span class="flex-1 text-[15px] leading-relaxed pt-0.5"><span class="font-bold text-slateink-500 mr-1.5">${LETTERS[i]}.</span>${opt}</span>
+          </label>`).join('')}
+      </div>`;
+    }
+    if(q.type==='mcma'){
+      return `<div class="mb-3 mt-5 text-xs font-semibold text-brand-700 bg-brand-50 border border-brand-100 rounded-lg px-3 py-2 inline-flex items-center gap-1.5">
+          ${icon('mouse-pointer-click','w-3.5 h-3.5')} Klik pada setiap jawaban benar. Jawaban benar bisa lebih dari satu.
+        </div>
+      <div class="space-y-2.5" data-opts>
+        ${q.options.map((opt,i)=>`
+          <label class="opt-shell ${a.mcma.has(i)?'is-selected':''}" data-mcma-opt="${i}" data-qno="${q.no}">
+            <span class="opt-check">${a.mcma.has(i)?icon('check','w-3.5 h-3.5 text-white'):''}</span>
+            <span class="flex-1 text-[15px] leading-relaxed pt-0.5"><span class="font-bold text-slateink-500 mr-1.5">${LETTERS[i]}.</span>${opt}</span>
+          </label>`).join('')}
+      </div>`;
+    }
+    if(q.type==='kat'){
+      return `<div class="mt-5 overflow-x-auto rounded-xl border border-slateink-200">
+        <table class="w-full text-sm">
+          <thead><tr class="bg-brand-50">
+            <th class="text-left font-bold text-brand-700 px-4 py-2.5">Pernyataan</th>
+            <th class="font-bold text-brand-700 px-4 py-2.5 w-24">Benar</th>
+            <th class="font-bold text-brand-700 px-4 py-2.5 w-24">Salah</th>
+          </tr></thead>
+          <tbody>
+          ${q.statements.map((st,i)=>`
+            <tr class="border-t border-slateink-200 bg-white">
+              <td class="px-4 py-3 text-[14.5px] leading-relaxed">${st}</td>
+              <td class="text-center px-2 py-3">
+                <button data-kat-opt="${i}" data-kat-val="B" data-qno="${q.no}"
+                  class="w-6 h-6 rounded-full border-2 ${a.kat[i]==='B' ? 'border-brand-600 bg-brand-600' : 'border-slateink-300 bg-white'} inline-flex items-center justify-center transition">
+                  ${a.kat[i]==='B' ? '<span class="w-2.5 h-2.5 rounded-full bg-white"></span>' : ''}
+                </button>
+              </td>
+              <td class="text-center px-2 py-3">
+                <button data-kat-opt="${i}" data-kat-val="S" data-qno="${q.no}"
+                  class="w-6 h-6 rounded-full border-2 ${a.kat[i]==='S' ? 'border-brand-600 bg-brand-600' : 'border-slateink-300 bg-white'} inline-flex items-center justify-center transition">
+                  ${a.kat[i]==='S' ? '<span class="w-2.5 h-2.5 rounded-full bg-white"></span>' : ''}
+                </button>
+              </td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`;
+    }
+    return '';
+  }
+
+  function renderSidebar(){
+    return `
+    <aside class="hidden lg:flex flex-col w-[236px] shrink-0 bg-white border-r border-slateink-200 h-[calc(100vh-64px)] sticky top-16">
+      <div class="px-5 pt-5 pb-4 border-b border-slateink-100">
+        <p class="text-xs font-bold text-slateink-500 mb-2.5">Keterangan</p>
+        <div class="space-y-1.5 text-[12.5px] text-slateink-600">
+          <div class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-[5px] border-[1.6px] border-slateink-200 bg-white"></span>Belum dijawab</div>
+          <div class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-[5px] bg-brand-600"></span>Terjawab</div>
+          <div class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-[5px] bg-warn-100 border-[1.6px] border-warn-600"></span>Ditandai ragu-ragu</div>
+          <div class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-[5px] border-[1.6px] border-white" style="box-shadow:0 0 0 2px #2563EB"></span>Soal aktif</div>
+        </div>
+      </div>
+      <div class="flex-1 overflow-y-auto scrollbar-thin px-5 py-4">
+        <div class="grid grid-cols-4 gap-2">
+          ${EXAM_DATA.map((q,i)=>{
+            let cls = '';
+            if(state.flagged.has(q.no)) cls='st-flagged'; else if(isAnswered(q)) cls='st-answered';
+            if(i===state.currentIndex) cls += ' st-active';
+            return `<button data-jump="${i}" class="navpill ${cls}">${q.no}</button>`;
+          }).join('')}
+        </div>
+      </div>
+      <div class="px-5 py-4 border-t border-slateink-100">
+        <div class="text-[12px] text-slateink-500 mb-1.5">Progres jawaban</div>
+        <div class="text-sm font-extrabold text-navy-900 mb-2">${answeredCount()}/${N} dijawab</div>
+        <div class="h-2 rounded-full bg-slateink-100 overflow-hidden">
+          <div class="h-full bg-brand-600 rounded-full transition-all" style="width:${Math.round(answeredCount()/N*100)}%"></div>
+        </div>
+      </div>
+    </aside>`;
+  }
+
+  function renderExam(){
+    const q = EXAM_DATA[state.currentIndex];
+    const pct = Math.round((answeredCount()/N)*100);
+    const isFlagged = state.flagged.has(q.no);
+    return `
+    <div class="min-h-screen flex flex-col">
+
+      <header class="fixed top-0 inset-x-0 z-30 bg-white/95 backdrop-blur border-b border-slateink-200">
+        <div class="px-4 sm:px-6 h-16 flex items-center gap-4">
+          <button id="btn-mobile-nav" class="lg:hidden w-9 h-9 rounded-lg border border-slateink-200 inline-flex items-center justify-center shrink-0">
+            ${icon('layout-grid','w-4.5 h-4.5 text-slateink-600')}
+          </button>
+          <div class="min-w-0 flex-1">
+            <p class="text-[13px] sm:text-sm font-extrabold text-navy-900 truncate">Try Out TKA — ${TOPIC_TITLE}</p>
+            <div class="flex items-center gap-2.5 mt-1">
+              <div class="h-1.5 w-28 sm:w-40 rounded-full bg-slateink-100 overflow-hidden">
+                <div class="h-full bg-brand-600 rounded-full transition-all" style="width:${pct}%"></div>
+              </div>
+              <span class="text-[11px] font-bold text-slateink-500 num-tab">${pct}% &middot; ${answeredCount()}/${N} dijawab</span>
+            </div>
+          </div>
+          <div id="timer-pill" class="shrink-0 inline-flex items-center gap-1.5 rounded-full border-[1.6px] ${state.timeLeftSec<=300?'border-bad-600 text-bad-700 bg-bad-50':'border-brand-600 text-brand-700 bg-brand-50'} px-3.5 py-1.5 font-extrabold text-sm num-tab">
+            ${icon('timer','w-4 h-4')} <span id="timer-text">${fmtTime(state.timeLeftSec)}</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="flex flex-1 pt-16">
+        ${renderSidebar()}
+
+        <main class="flex-1 min-w-0 px-4 sm:px-8 py-6 sm:py-8 max-w-3xl mx-auto w-full">
+          <div class="anim-fade-up" key="${q.no}">
+            <div class="flex flex-wrap items-center gap-2 mb-4">
+              <span class="text-xs font-extrabold text-brand-700 bg-brand-50 border border-brand-100 rounded-lg px-2.5 py-1">SOAL ${q.no} / ${N}</span>
+              <span class="text-[11px] font-bold border rounded-lg px-2.5 py-1 ${levelBadgeClasses(q.level)}">${q.level}</span>
+              <span class="text-[11px] font-bold border border-slateink-200 text-slateink-600 bg-slateink-50 rounded-lg px-2.5 py-1">${TYPE_LABELS[q.type]}</span>
+              <button id="btn-flag" data-qno="${q.no}" class="ml-auto text-xs font-bold rounded-lg px-3 py-1.5 border transition inline-flex items-center gap-1.5
+                ${isFlagged ? 'bg-warn-100 border-warn-600 text-warn-700' : 'bg-white border-slateink-200 text-slateink-600 hover:border-warn-400'}">
+                ${icon('flag','w-3.5 h-3.5')} ${isFlagged?'Ditandai':'Tandai ragu-ragu'}
+              </button>
+            </div>
+
+            <div class="bg-white border border-slateink-200 rounded-2xl shadow-card p-5 sm:p-7">
+              ${renderQuestionBody(q)}
+              ${renderOptionsInput(q, 'exam')}
+            </div>
+          </div>
+        </main>
+      </div>
+
+      <div class="fixed bottom-0 inset-x-0 z-30 bg-white/95 backdrop-blur border-t border-slateink-200">
+        <div class="max-w-3xl mx-auto lg:ml-[calc(236px+((100vw-236px)/2-378px))] px-4 sm:px-8 h-[68px] flex items-center gap-3">
+          <button id="btn-prev" ${state.currentIndex===0?'disabled':''} class="inline-flex items-center gap-1.5 rounded-xl border border-slateink-200 px-4 py-2.5 text-sm font-bold text-slateink-700 disabled:opacity-40 disabled:cursor-not-allowed hover:border-brand-400 transition">
+            ${icon('arrow-left','w-4 h-4')} <span class="hidden sm:inline">Sebelumnya</span>
+          </button>
+          <button id="btn-next" ${state.currentIndex===N-1?'disabled':''} class="inline-flex items-center gap-1.5 rounded-xl border border-slateink-200 px-4 py-2.5 text-sm font-bold text-slateink-700 disabled:opacity-40 disabled:cursor-not-allowed hover:border-brand-400 transition">
+            <span class="hidden sm:inline">Berikutnya</span> ${icon('arrow-right','w-4 h-4')}
+          </button>
+          <button id="btn-finish" class="ml-auto inline-flex items-center gap-1.5 rounded-xl bg-good-600 hover:bg-good-700 text-white px-5 py-2.5 text-sm font-extrabold transition shadow-md shadow-good-600/25">
+            ${icon('check-circle-2','w-4.5 h-4.5')} Selesaikan Ujian
+          </button>
+        </div>
+      </div>
+    </div>
+
+    ${state.jumpMenuOpen ? renderMobileJump() : ''}
+    ${state.confirmOpen ? renderConfirmModal() : ''}
+    `;
+  }
+
+  function renderMobileJump(){
+    return `
+    <div id="mobile-jump-overlay" class="fixed inset-0 z-40 bg-navy-950/50 flex items-end lg:hidden">
+      <div class="anim-pop w-full bg-white rounded-t-3xl max-h-[78vh] flex flex-col">
+        <div class="px-5 pt-4 pb-3 border-b border-slateink-100 flex items-center justify-between">
+          <p class="font-extrabold text-navy-900">Navigasi Soal</p>
+          <button id="btn-close-jump" class="w-8 h-8 rounded-full bg-slateink-100 inline-flex items-center justify-center">${icon('x','w-4 h-4')}</button>
+        </div>
+        <div class="px-5 py-3 flex gap-4 text-[11.5px] text-slateink-600 flex-wrap border-b border-slateink-100">
+          <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded border border-slateink-200 bg-white"></span>Belum</div>
+          <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-brand-600"></span>Terjawab</div>
+          <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-warn-100 border border-warn-600"></span>Ragu-ragu</div>
+        </div>
+        <div class="overflow-y-auto scrollbar-thin px-5 py-4">
+          <div class="grid grid-cols-6 gap-2">
+            ${EXAM_DATA.map((q,i)=>{
+              let cls = '';
+              if(state.flagged.has(q.no)) cls='st-flagged'; else if(isAnswered(q)) cls='st-answered';
+              if(i===state.currentIndex) cls += ' st-active';
+              return `<button data-jump="${i}" class="navpill ${cls}">${q.no}</button>`;
+            }).join('')}
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function renderConfirmModal(){
+    const un = unansweredCount();
+    return `
+    <div id="confirm-overlay" class="fixed inset-0 z-50 bg-navy-950/55 flex items-center justify-center px-4">
+      <div class="anim-pop bg-white rounded-3xl shadow-pop max-w-md w-full p-7 text-center">
+        <div class="w-14 h-14 rounded-2xl bg-warn-50 border border-warn-100 text-warn-600 mx-auto flex items-center justify-center mb-4">
+          ${icon('alert-triangle','w-6 h-6')}
+        </div>
+        <h3 class="text-lg font-extrabold text-navy-900">Selesaikan Ujian?</h3>
+        <p class="text-sm text-slateink-600 mt-2 leading-relaxed">
+          ${un>0 ? `Kamu masih memiliki <span class="font-extrabold text-bad-600">${un} soal</span> yang belum dijawab.<br>` : ''}
+          Yakin ingin menyelesaikan ujian sekarang?
+        </p>
+        <div class="grid grid-cols-2 gap-3 mt-6">
+          <button id="btn-cancel-finish" class="rounded-xl border border-slateink-200 py-2.5 font-bold text-sm text-slateink-700 hover:bg-slateink-50 transition">Kembali</button>
+          <button id="btn-confirm-finish" class="rounded-xl bg-bad-600 hover:bg-bad-700 py-2.5 font-bold text-sm text-white transition">Ya, Selesaikan</button>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  /* ============================================================ RESULT SCREEN */
+  function renderGauge(pct){
+    const r = 66, C = 2*Math.PI*r;
+    const off = C - (pct/100)*C;
+    const color = pct>=75 ? '#16A34A' : pct>=50 ? '#2563EB' : '#DC2626';
+    return `
+    <svg viewBox="0 0 160 160" class="w-40 h-40 sm:w-44 sm:h-44">
+      <circle cx="80" cy="80" r="${r}" fill="none" stroke="#EEF2F8" stroke-width="14"/>
+      <circle cx="80" cy="80" r="${r}" fill="none" stroke="${color}" stroke-width="14" stroke-linecap="round"
+        stroke-dasharray="${C}" stroke-dashoffset="${off}" transform="rotate(-90 80 80)" class="gauge-ring"/>
+      <text x="80" y="76" text-anchor="middle" font-size="34" font-weight="800" fill="#0F172A" font-family="Plus Jakarta Sans, sans-serif">${pct}</text>
+      <text x="80" y="98" text-anchor="middle" font-size="13" font-weight="700" fill="#64748B" font-family="Plus Jakarta Sans, sans-serif">dari 100</text>
+    </svg>`;
+  }
+
+  function statusOf(q){
+    if(!isAnswered(q)) return 'unanswered';
+    return isCorrect(q) ? 'correct' : 'incorrect';
+  }
+  function statusMeta(status){
+    if(status==='correct') return {label:'Benar', cls:'bg-good-50 text-good-700 border-good-100', dot:'bg-good-600', ic:'check-circle-2'};
+    if(status==='incorrect') return {label:'Salah', cls:'bg-bad-50 text-bad-700 border-bad-100', dot:'bg-bad-600', ic:'x-circle'};
+    return {label:'Tidak Dijawab', cls:'bg-warn-50 text-warn-700 border-warn-100', dot:'bg-warn-600', ic:'circle-dashed'};
+  }
+
+  function renderAnswerRecap(q){
+    const a = state.answers[q.no];
+    if(q.type==='pg'){
+      return `<div class="space-y-2 mt-4">
+        ${q.options.map((opt,i)=>{
+          const picked = a.pg===i, correct = q.answer===i;
+          let cls = 'opt-shell !cursor-default';
+          if(correct) cls += ' is-correct'; else if(picked && !correct) cls += ' is-incorrect';
+          return `<div class="${cls}">
+            <span class="opt-radio ${correct?'!border-good-600':(picked?'!border-bad-600':'')}"><span class="opt-radio-dot" style="${(correct||picked)?'opacity:1;transform:scale(1);background:'+(correct?'#16A34A':'#DC2626'):''}"></span></span>
+            <span class="flex-1 text-[14.5px] leading-relaxed pt-0.5 flex items-center gap-2 flex-wrap">
+              <span><span class="font-bold text-slateink-500 mr-1">${LETTERS[i]}.</span>${opt}</span>
+              ${correct?'<span class="text-[11px] font-extrabold text-good-700 bg-good-100 rounded px-1.5 py-0.5">&check; kunci</span>':''}
+              ${(picked && !correct)?'<span class="text-[11px] font-extrabold text-bad-700 bg-bad-100 rounded px-1.5 py-0.5">Jawabanmu</span>':''}
+            </span>
+          </div>`;
+        }).join('')}
+      </div>`;
+    }
+    if(q.type==='mcma'){
+      const want = new Set(q.answer);
+      return `<div class="space-y-2 mt-4">
+        ${q.options.map((opt,i)=>{
+          const picked = a.mcma.has(i), correct = want.has(i);
+          let cls = 'opt-shell !cursor-default';
+          if(correct) cls += ' is-correct'; else if(picked && !correct) cls += ' is-incorrect';
+          return `<div class="${cls}">
+            <span class="opt-check ${correct?'!border-good-600 !bg-good-600':(picked?'!border-bad-600 !bg-bad-600':'')}">${(correct||picked)?icon('check','w-3.5 h-3.5 text-white'):''}</span>
+            <span class="flex-1 text-[14.5px] leading-relaxed pt-0.5 flex items-center gap-2 flex-wrap">
+              <span><span class="font-bold text-slateink-500 mr-1">${LETTERS[i]}.</span>${opt}</span>
+              ${correct?'<span class="text-[11px] font-extrabold text-good-700 bg-good-100 rounded px-1.5 py-0.5">&check; kunci</span>':''}
+              ${(picked && !correct)?'<span class="text-[11px] font-extrabold text-bad-700 bg-bad-100 rounded px-1.5 py-0.5">Jawabanmu</span>':''}
+            </span>
+          </div>`;
+        }).join('')}
+      </div>`;
+    }
+    if(q.type==='kat'){
+      return `<div class="mt-4 overflow-x-auto rounded-xl border border-slateink-200">
+        <table class="w-full text-sm">
+          <thead><tr class="bg-slateink-50">
+            <th class="text-left font-bold text-slateink-600 px-4 py-2.5">Pernyataan</th>
+            <th class="font-bold text-slateink-600 px-3 py-2.5 w-28">Jawabanmu</th>
+            <th class="font-bold text-slateink-600 px-3 py-2.5 w-24">Kunci</th>
+          </tr></thead>
+          <tbody>
+          ${q.statements.map((st,i)=>{
+            const picked = a.kat[i], correct = q.answer[i];
+            const ok = picked===correct;
+            return `<tr class="border-t border-slateink-200 bg-white">
+              <td class="px-4 py-3 text-[14px] leading-relaxed">${st}</td>
+              <td class="text-center px-2 py-3">
+                <span class="inline-flex items-center gap-1 text-xs font-extrabold rounded-full px-2.5 py-1 ${picked===null?'bg-slateink-100 text-slateink-500':(ok?'bg-good-100 text-good-700':'bg-bad-100 text-bad-700')}">
+                  ${picked===null?'—':(picked==='B'?'Benar':'Salah')}
+                </span>
+              </td>
+              <td class="text-center px-2 py-3">
+                <span class="inline-flex items-center gap-1 text-xs font-extrabold rounded-full px-2.5 py-1 bg-good-100 text-good-700">${correct==='B'?'Benar':'Salah'}</span>
+              </td>
+            </tr>`;
+          }).join('')}
+          </tbody>
+        </table>
+      </div>`;
+    }
+    return '';
+  }
+
+  function renderReviewCard(q, forceOpen){
+    const status = statusOf(q);
+    const meta = statusMeta(status);
+    const open = forceOpen || state.reviewAll;
+    return `
+    <div class="bg-white border border-slateink-200 rounded-2xl shadow-card overflow-hidden" id="review-${q.no}">
+      <button data-toggle-review="${q.no}" class="w-full flex items-center gap-3 px-5 py-4 text-left">
+        <span class="w-8 h-8 rounded-lg bg-slateink-50 border border-slateink-200 flex items-center justify-center text-[13px] font-extrabold text-slateink-600 shrink-0">${q.no}</span>
+        <span class="flex-1 min-w-0">
+          <span class="text-[13.5px] font-bold text-navy-900 truncate block">${q.elemen} &middot; ${q.sub}</span>
+          <span class="text-[11.5px] text-slateink-500">${q.level} &middot; ${TYPE_LABELS[q.type]}</span>
+        </span>
+        <span class="inline-flex items-center gap-1 text-[11.5px] font-extrabold rounded-full px-2.5 py-1 border ${meta.cls} shrink-0">
+          ${icon(meta.ic,'w-3.5 h-3.5')} ${meta.label}
+        </span>
+        <span class="shrink-0 text-slateink-400">${icon(open?'chevron-up':'chevron-down','w-4.5 h-4.5')}</span>
+      </button>
+      <div class="${open?'':'hidden'} px-5 pb-5 border-t border-slateink-100 pt-4" data-review-body>
+        ${renderQuestionBody(q)}
+        ${renderAnswerRecap(q)}
+        <div class="mt-4 rounded-xl border border-brand-100 bg-brand-50/60 p-4">
+          <p class="text-[11.5px] font-extrabold text-brand-700 uppercase tracking-wide mb-1.5 flex items-center gap-1.5">${icon('lightbulb','w-3.5 h-3.5')} Pembahasan</p>
+          <div class="prose-q math-block text-[14.5px] text-slateink-700">${q.explanation}</div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function renderResult(){
+    const pct = scorePct();
+    const correct = correctCount(), wrong = wrongCount(), un = unansweredCount();
+    const dt = state.finishedAt ? fmtDateTime(state.finishedAt) : '';
+    return `
+    <div class="min-h-screen px-4 sm:px-6 py-8 sm:py-12">
+      <div class="max-w-3xl mx-auto space-y-6">
+
+        <div id="result-summary-card" class="bg-white border border-slateink-200 rounded-3xl shadow-card overflow-hidden anim-fade-up">
+          <div class="px-6 sm:px-9 pt-8 pb-7 bg-navy-900 grid-texture relative overflow-hidden">
+            <div class="absolute -right-16 -top-20 w-64 h-64 rounded-full bg-brand-600/25 blur-3xl"></div>
+            <p class="relative text-[11px] font-bold tracking-wide text-brand-100 bg-white/10 border border-white/15 inline-block rounded-full px-3 py-1">HASIL UJIAN</p>
+            <h2 class="relative text-white text-xl sm:text-2xl font-extrabold mt-3">Ringkasan Evaluasi Kamu</h2>
+            <div class="relative grid sm:grid-cols-2 gap-4 mt-5 text-slateink-200 text-[13px]">
+              <div>
+                <p class="text-slateink-400 text-[11px] font-semibold">Nama Peserta</p>
+                <p class="font-bold text-white">${esc(state.identity.name)}</p>
+              </div>
+              <div>
+                <p class="text-slateink-400 text-[11px] font-semibold">Kelas / Asal Sekolah</p>
+                <p class="font-bold text-white">${esc(state.identity.kelas)} &middot; ${esc(state.identity.sekolah)}</p>
+              </div>
+              <div class="sm:col-span-2">
+                <p class="text-slateink-400 text-[11px] font-semibold">Waktu Pengerjaan Selesai</p>
+                <p class="font-bold text-white">${dt}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="px-6 sm:px-9 py-8 flex flex-col sm:flex-row items-center gap-8">
+            <div class="shrink-0">${renderGauge(pct)}</div>
+            <div class="flex-1 w-full grid grid-cols-3 gap-3">
+              <div class="rounded-2xl bg-good-50 border border-good-100 px-3 py-3.5 text-center">
+                <p class="text-2xl font-extrabold text-good-700 num-tab">${correct}</p>
+                <p class="text-[11px] font-bold text-good-700 mt-0.5">Benar</p>
+              </div>
+              <div class="rounded-2xl bg-bad-50 border border-bad-100 px-3 py-3.5 text-center">
+                <p class="text-2xl font-extrabold text-bad-700 num-tab">${wrong}</p>
+                <p class="text-[11px] font-bold text-bad-700 mt-0.5">Salah</p>
+              </div>
+              <div class="rounded-2xl bg-warn-50 border border-warn-100 px-3 py-3.5 text-center">
+                <p class="text-2xl font-extrabold text-warn-700 num-tab">${un}</p>
+                <p class="text-[11px] font-bold text-warn-700 mt-0.5">Tidak Dijawab</p>
+              </div>
+              <div class="col-span-3 rounded-2xl bg-slateink-50 border border-slateink-200 px-4 py-3 flex items-center justify-between mt-1">
+                <span class="text-[13px] font-bold text-slateink-600">Skor Akhir</span>
+                <span class="text-lg font-extrabold text-navy-900 num-tab">${correct}/${N}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="px-6 sm:px-9 pb-8 grid sm:grid-cols-3 gap-3">
+            <button id="btn-restart" class="inline-flex items-center justify-center gap-1.5 rounded-xl border border-slateink-200 py-2.5 text-sm font-bold text-slateink-700 hover:bg-slateink-50 transition">
+              ${icon('rotate-ccw','w-4 h-4')} Ulangi Ujian
+            </button>
+            <button id="btn-open-all" class="inline-flex items-center justify-center gap-1.5 rounded-xl border border-brand-200 bg-brand-50 py-2.5 text-sm font-bold text-brand-700 hover:bg-brand-100 transition">
+              ${icon('book-open','w-4 h-4')} ${state.reviewAll?'Tutup Semua Pembahasan':'Buka Semua Pembahasan'}
+            </button>
+            <button id="btn-download-pdf" class="inline-flex items-center justify-center gap-1.5 rounded-xl bg-brand-600 hover:bg-brand-700 py-2.5 text-sm font-bold text-white transition shadow-md shadow-brand-600/25">
+              ${icon('download','w-4 h-4')} <span id="pdf-btn-label">Download Hasil (PDF)</span>
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-[15px] font-extrabold text-navy-900 mb-3 px-1">Daftar Evaluasi &amp; Pembahasan per Soal</h3>
+          <div class="space-y-3">
+            ${EXAM_DATA.map(q=>renderReviewCard(q,false)).join('')}
+          </div>
+        </div>
+
+        <p class="text-center text-[12px] text-slateink-400 pt-2 pb-6">Simulator Ujian TKA Matematika &middot; Dibuat untuk latihan mandiri.</p>
+      </div>
+    </div>`;
+  }
+
+  /* ============================================================ PDF EXPORT */
+  function buildPrintReport(){
+    const pct = scorePct(), correct = correctCount(), wrong = wrongCount(), un = unansweredCount();
+    const dt = state.finishedAt ? fmtDateTime(state.finishedAt) : '';
+    const rows = EXAM_DATA.map(q=>{
+      const status = statusOf(q);
+      const meta = statusMeta(status);
+      let answerHtml = '';
+      const a = state.answers[q.no];
+      if(q.type==='pg'){
+        answerHtml = `<p style="margin:2px 0"><b>Jawabanmu:</b> ${a.pg!==null? LETTERS[a.pg]+'. '+esc(stripTags(q.options[a.pg])) : '—'} &nbsp;|&nbsp; <b>Kunci:</b> ${LETTERS[q.answer]}. ${esc(stripTags(q.options[q.answer]))}</p>`;
+      } else if(q.type==='mcma'){
+        const picked = [...a.mcma].sort((x,y)=>x-y).map(i=>LETTERS[i]).join(', ') || '—';
+        const key = q.answer.slice().sort((x,y)=>x-y).map(i=>LETTERS[i]).join(', ');
+        answerHtml = `<p style="margin:2px 0"><b>Jawabanmu:</b> ${picked} &nbsp;|&nbsp; <b>Kunci:</b> ${key}</p>`;
+      } else if(q.type==='kat'){
+        answerHtml = q.statements.map((st,i)=>{
+          const picked = a.kat[i]===null?'—':(a.kat[i]==='B'?'Benar':'Salah');
+          const key = q.answer[i]==='B'?'Benar':'Salah';
+          return `<p style="margin:2px 0;font-size:11px">&bull; ${st} — <b>Jawabanmu:</b> ${picked}, <b>Kunci:</b> ${key}</p>`;
+        }).join('');
+      }
+      return `
+      <div style="break-inside:avoid;border:1px solid #E2E8F0;border-radius:10px;padding:14px 16px;margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <span style="font-weight:800;font-size:12.5px;color:#0F172A;">Soal ${q.no} &middot; ${esc(q.elemen)} / ${esc(q.sub)}</span>
+          <span style="font-weight:800;font-size:11px;padding:2px 8px;border-radius:999px;background:${status==='correct'?'#DCFCE7':status==='incorrect'?'#FEE2E2':'#FEF3C7'};color:${status==='correct'?'#15803D':status==='incorrect'?'#B91C1C':'#B45309'}">${meta.label}</span>
+        </div>
+        <div style="font-size:12.5px;color:#334155;line-height:1.6">${q.stem||''}${q.post||''}</div>
+        <div style="font-size:12px;color:#0F172A;margin-top:6px;background:#F8FAFC;border-radius:8px;padding:8px 10px;">${answerHtml}</div>
+        <div style="font-size:12px;color:#334155;margin-top:8px;border-top:1px dashed #CBD5E1;padding-top:8px;">
+          <b style="color:#1D4ED8;">Pembahasan:</b> ${q.explanation}
+        </div>
+      </div>`;
+    }).join('');
+
+    return `
+    <div style="font-family:'Plus Jakarta Sans',Arial,sans-serif;color:#0F172A;padding:36px 40px;">
+      <div style="border-bottom:3px solid #2563EB;padding-bottom:14px;margin-bottom:20px;">
+        <p style="font-size:11px;font-weight:800;letter-spacing:.06em;color:#2563EB;text-transform:uppercase;margin:0 0 4px;">Laporan Hasil Ujian</p>
+        <h1 style="font-size:19px;margin:0;font-weight:800;">Simulator Ujian — ${TOPIC_TITLE}</h1>
+      </div>
+      <table style="width:100%;font-size:12.5px;margin-bottom:18px;border-collapse:collapse;">
+        <tr><td style="padding:3px 0;color:#64748B;width:140px;">Nama Peserta</td><td style="padding:3px 0;font-weight:700;">${esc(state.identity.name)}</td></tr>
+        <tr><td style="padding:3px 0;color:#64748B;">Kelas</td><td style="padding:3px 0;font-weight:700;">${esc(state.identity.kelas)}</td></tr>
+        <tr><td style="padding:3px 0;color:#64748B;">Asal Sekolah</td><td style="padding:3px 0;font-weight:700;">${esc(state.identity.sekolah)}</td></tr>
+        <tr><td style="padding:3px 0;color:#64748B;">Waktu Selesai</td><td style="padding:3px 0;font-weight:700;">${dt}</td></tr>
+      </table>
+
+      <div style="display:flex;gap:10px;margin-bottom:22px;">
+        <div style="flex:1;background:#EFF5FF;border-radius:10px;padding:12px;text-align:center;">
+          <div style="font-size:20px;font-weight:800;color:#1D4ED8;">${pct}</div><div style="font-size:11px;color:#1D4ED8;font-weight:700;">Nilai Akhir</div>
+        </div>
+        <div style="flex:1;background:#F0FDF4;border-radius:10px;padding:12px;text-align:center;">
+          <div style="font-size:20px;font-weight:800;color:#15803D;">${correct}</div><div style="font-size:11px;color:#15803D;font-weight:700;">Benar</div>
+        </div>
+        <div style="flex:1;background:#FEF2F2;border-radius:10px;padding:12px;text-align:center;">
+          <div style="font-size:20px;font-weight:800;color:#B91C1C;">${wrong}</div><div style="font-size:11px;color:#B91C1C;font-weight:700;">Salah</div>
+        </div>
+        <div style="flex:1;background:#FFFBEB;border-radius:10px;padding:12px;text-align:center;">
+          <div style="font-size:20px;font-weight:800;color:#B45309;">${un}</div><div style="font-size:11px;color:#B45309;font-weight:700;">Tidak Dijawab</div>
+        </div>
+      </div>
+
+      <h2 style="font-size:14px;font-weight:800;margin:0 0 12px;">Rekapitulasi Seluruh Soal</h2>
+      ${rows}
+      <p style="text-align:center;font-size:10.5px;color:#94A3B8;margin-top:16px;">Dibuat otomatis oleh Simulator Ujian TKA Matematika</p>
+    </div>`;
+  }
+
+  function stripTags(html){
+    const d = document.createElement('div'); d.innerHTML = html||''; return d.textContent || '';
+  }
+
+  function downloadPDF(){
+    const btnLabel = document.getElementById('pdf-btn-label');
+    if(typeof html2pdf==='undefined'){
+      alert('Modul pembuat PDF belum termuat (kemungkinan koneksi ke CDN diblokir). Silakan gunakan menu Cetak (Ctrl+P) pada browser sebagai alternatif, lalu pilih "Simpan sebagai PDF".');
+      window.print();
+      return;
+    }
+    if(btnLabel) btnLabel.textContent = 'Menyiapkan PDF...';
+    let portal = document.getElementById('print-report-portal');
+    if(portal) portal.remove();
+    portal = document.createElement('div');
+    portal.id = 'print-report-portal';
+    const holder = document.createElement('div');
+    holder.id = 'print-report';
+    holder.innerHTML = buildPrintReport();
+    portal.appendChild(holder);
+    document.body.appendChild(portal);
+    renderMathIn(holder);
+    const cleanup = ()=>{
+      portal.remove();
+      if(btnLabel) btnLabel.textContent = 'Download Hasil (PDF)';
+    };
+    setTimeout(()=>{
+      if(!holder.offsetWidth || !holder.scrollHeight){
+        cleanup();
+        alert('Gagal menyiapkan konten PDF (halaman kosong). Silakan coba lagi, atau gunakan menu Cetak (Ctrl+P) lalu pilih "Simpan sebagai PDF".');
+        return;
+      }
+      const opt = {
+        margin: 0,
+        filename: `Hasil-Ujian-${(state.identity.name||'peserta').replace(/\s+/g,'_')}.pdf`,
+        image: { type:'jpeg', quality:0.95 },
+        html2canvas: { scale:2, useCORS:true, backgroundColor:'#ffffff', windowWidth:794, scrollX:0, scrollY:0 },
+        jsPDF: { unit:'pt', format:'a4', orientation:'portrait' },
+        pagebreak: { mode:['css','legacy'] }
+      };
+      html2pdf().set(opt).from(holder).save().then(cleanup).catch((err)=>{
+        cleanup();
+        alert('Gagal membuat PDF: ' + (err && err.message ? err.message : 'terjadi kesalahan tak terduga') + '. Silakan coba lagi, atau gunakan menu Cetak (Ctrl+P) lalu pilih "Simpan sebagai PDF".');
+      });
+    }, 300);
+  }
+
+  /* ============================================================ TIMER */
+  function startTimer(){
+    stopTimer();
+    state.timerId = setInterval(()=>{
+      state.timeLeftSec--;
+      const el = document.getElementById('timer-text');
+      const pill = document.getElementById('timer-pill');
+      if(el) el.textContent = fmtTime(state.timeLeftSec);
+      if(pill){
+        if(state.timeLeftSec<=300){ pill.classList.add('border-bad-600','text-bad-700','bg-bad-50'); pill.classList.remove('border-brand-600','text-brand-700','bg-brand-50'); }
+      }
+      if(state.timeLeftSec<=0){
+        stopTimer();
+        finishExam(true);
+      }
+    }, 1000);
+  }
+  function stopTimer(){ if(state.timerId){ clearInterval(state.timerId); state.timerId=null; } }
+
+  function finishExam(auto){
+    stopTimer();
+    state.finishedAt = new Date();
+    state.confirmOpen = false;
+    state.screen = 'result';
+    state.reviewAll = false;
+    render();
+    window.scrollTo({top:0, behavior:'instant'});
+  }
+
+  /* ============================================================ EVENTS */
+  function bindEvents(){
+    if(state.screen==='start'){
+      const nameI = document.getElementById('inp-name');
+      const kelasI = document.getElementById('inp-kelas');
+      const sekolahI = document.getElementById('inp-sekolah');
+      if(nameI) nameI.oninput = e=> state.identity.name = e.target.value;
+      if(kelasI) kelasI.oninput = e=> state.identity.kelas = e.target.value;
+      if(sekolahI) sekolahI.oninput = e=> state.identity.sekolah = e.target.value;
+
+      const slider = document.getElementById('dur-slider');
+      if(slider) slider.oninput = e=>{
+        state.durationMin = parseInt(e.target.value,10);
+        const lbl = document.getElementById('dur-label');
+        if(lbl) lbl.textContent = state.durationMin+' menit';
+      };
+
+      const btn = document.getElementById('btn-start');
+      if(btn) btn.onclick = ()=>{
+        const name=(document.getElementById('inp-name').value||'').trim();
+        const kelas=(document.getElementById('inp-kelas').value||'').trim();
+        const sekolah=(document.getElementById('inp-sekolah').value||'').trim();
+        if(!name || !kelas || !sekolah){
+          document.getElementById('form-err').classList.remove('hidden');
+          return;
+        }
+        state.identity = {name, kelas, sekolah};
+        state.timeLeftSec = state.durationMin*60;
+        state.startedAt = new Date();
+        state.currentIndex = 0;
+        state.screen = 'exam';
+        render();
+        startTimer();
+      };
+      return;
+    }
+
+    if(state.screen==='exam'){
+      // option interactions
+      $app.querySelectorAll('[data-pg-opt]').forEach(el=>{
+        el.onclick = ()=>{
+          const qno = parseInt(el.dataset.qno,10), val = parseInt(el.dataset.pgOpt,10);
+          state.answers[qno].pg = state.answers[qno].pg===val ? null : val;
+          render();
+        };
+      });
+      $app.querySelectorAll('[data-mcma-opt]').forEach(el=>{
+        el.onclick = ()=>{
+          const qno = parseInt(el.dataset.qno,10), val = parseInt(el.dataset.mcmaOpt,10);
+          const set = state.answers[qno].mcma;
+          set.has(val) ? set.delete(val) : set.add(val);
+          render();
+        };
+      });
+      $app.querySelectorAll('[data-kat-opt]').forEach(el=>{
+        el.onclick = ()=>{
+          const qno = parseInt(el.dataset.qno,10), idx = parseInt(el.dataset.katOpt,10), val = el.dataset.katVal;
+          const arr = state.answers[qno].kat;
+          arr[idx] = arr[idx]===val ? null : val;
+          render();
+        };
+      });
+
+      const flagBtn = document.getElementById('btn-flag');
+      if(flagBtn) flagBtn.onclick = ()=>{
+        const qno = parseInt(flagBtn.dataset.qno,10);
+        state.flagged.has(qno) ? state.flagged.delete(qno) : state.flagged.add(qno);
+        render();
+      };
+
+      const prevBtn = document.getElementById('btn-prev');
+      if(prevBtn) prevBtn.onclick = ()=>{ if(state.currentIndex>0){ state.currentIndex--; render(); window.scrollTo({top:0,behavior:'smooth'}); } };
+      const nextBtn = document.getElementById('btn-next');
+      if(nextBtn) nextBtn.onclick = ()=>{ if(state.currentIndex<N-1){ state.currentIndex++; render(); window.scrollTo({top:0,behavior:'smooth'}); } };
+
+      $app.querySelectorAll('[data-jump]').forEach(el=>{
+        el.onclick = ()=>{
+          state.currentIndex = parseInt(el.dataset.jump,10);
+          state.jumpMenuOpen = false;
+          render();
+          window.scrollTo({top:0,behavior:'smooth'});
+        };
+      });
+
+      const mobileNavBtn = document.getElementById('btn-mobile-nav');
+      if(mobileNavBtn) mobileNavBtn.onclick = ()=>{ state.jumpMenuOpen = true; render(); };
+      const closeJump = document.getElementById('btn-close-jump');
+      if(closeJump) closeJump.onclick = ()=>{ state.jumpMenuOpen = false; render(); };
+      const jumpOverlay = document.getElementById('mobile-jump-overlay');
+      if(jumpOverlay) jumpOverlay.addEventListener('click', e=>{ if(e.target===jumpOverlay){ state.jumpMenuOpen=false; render(); } });
+
+      const finishBtn = document.getElementById('btn-finish');
+      if(finishBtn) finishBtn.onclick = ()=>{ state.confirmOpen = true; render(); };
+      const cancelFinish = document.getElementById('btn-cancel-finish');
+      if(cancelFinish) cancelFinish.onclick = ()=>{ state.confirmOpen = false; render(); };
+      const confirmFinish = document.getElementById('btn-confirm-finish');
+      if(confirmFinish) confirmFinish.onclick = ()=> finishExam(false);
+      const overlay = document.getElementById('confirm-overlay');
+      if(overlay) overlay.addEventListener('click', e=>{ if(e.target===overlay){ state.confirmOpen=false; render(); } });
+      return;
+    }
+
+    if(state.screen==='result'){
+      const restartBtn = document.getElementById('btn-restart');
+      if(restartBtn) restartBtn.onclick = ()=>{
+        EXAM_DATA.forEach(q=>{
+          if(q.type==='pg') state.answers[q.no] = { pg:null };
+          else if(q.type==='mcma') state.answers[q.no] = { mcma:new Set() };
+          else if(q.type==='kat') state.answers[q.no] = { kat: q.statements.map(()=>null) };
+        });
+        state.flagged.clear();
+        state.currentIndex = 0;
+        state.reviewAll = false;
+        state.screen = 'start';
+        render();
+        window.scrollTo({top:0,behavior:'instant'});
+      };
+      const openAll = document.getElementById('btn-open-all');
+      if(openAll) openAll.onclick = ()=>{ state.reviewAll = !state.reviewAll; render(); };
+      const pdfBtn = document.getElementById('btn-download-pdf');
+      if(pdfBtn) pdfBtn.onclick = downloadPDF;
+
+      $app.querySelectorAll('[data-toggle-review]').forEach(el=>{
+        el.onclick = ()=>{
+          const qno = el.dataset.toggleReview;
+          const card = document.getElementById('review-'+qno);
+          const body = card.querySelector('[data-review-body]');
+          const chevron = card.querySelector('svg, i[data-lucide]');
+          const willOpen = body.classList.contains('hidden');
+          body.classList.toggle('hidden');
+          const chevronEl = card.querySelector('button > span:last-child');
+          if(chevronEl) chevronEl.innerHTML = icon(willOpen?'chevron-up':'chevron-down','w-4.5 h-4.5');
+          mountIcons();
+          if(willOpen) renderMathIn(body);
+        };
+      });
+      return;
+    }
+  }
+
+  /* ============================================================ INIT */
+  render();
+
+})();
+</script>
+</body>
+</html>
